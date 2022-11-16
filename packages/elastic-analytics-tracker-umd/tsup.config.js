@@ -13,6 +13,7 @@ export default defineConfig([
     ...commonConfig,
     format: ["iife"],
     outDir: "dist",
+    minify: true,
     globalName: "elasticAnalyticsDefault",
     footer: {
       js: "var elasticAnalytics = elasticAnalyticsDefault.default"
