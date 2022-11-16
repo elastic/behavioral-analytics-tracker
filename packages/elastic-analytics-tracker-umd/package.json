@@ -1,0 +1,12 @@
+{
+  "name": "@elastic/analytics-tracker-umd",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "tsup"
+  },
+  "devDependencies": {
+    "@elastic/analytics-tracker": "0.0.1",
+    "tsconfig": "*",
+    "tsup": "^6.3.0"
+  }
+}
