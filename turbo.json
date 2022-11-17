@@ -8,10 +8,6 @@
       "dependsOn": ["build"],
       "outputs": [],
       "inputs": ["src/**/*.ts", "test/**/*.ts"]
-    },
-    "deploy": {
-      "dependsOn": ["build", "test"],
-      "outputs": []
     }
   }
 }

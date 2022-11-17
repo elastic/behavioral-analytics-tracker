@@ -2,7 +2,7 @@ import { Tracker } from "../src/tracker";
 
 describe("Tracker", () => {
   const tracker = new Tracker({
-    endpointURL: "http://localhost/collection",
+    dsn: "http://localhost/collection",
     dataProviders: {
       eventType: (eventType: any, payload: any) => {
         return { ...payload, eventType };

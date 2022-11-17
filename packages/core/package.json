@@ -1,7 +1,7 @@
 {
-  "name": "@elastic/analytics-tracker",
+  "name": "@elastic/behavioural-analytics-tracker-core",
   "version": "0.0.1",
-  "main": "src/index.js",
+  "main": "src/index.ts",
   "scripts": {
     "test": "jest"
   },
