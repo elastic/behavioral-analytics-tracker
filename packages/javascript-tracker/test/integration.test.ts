@@ -19,7 +19,7 @@ describe("Integration", () => {
   test("Throws error when not initialised", () => {
     expect(() => {
       trackEvent("click", { test: "testCustom" });
-    }).toThrowError();
+    }).toThrowError("Behavioural Analytics: Tracker not initialized.");
   });
 
   test("Dispatch track page view", () => {
