@@ -1,14 +1,14 @@
-import { Tracker } from "@elastic/analytics-tracker";
+import { Tracker } from "@elastic/behavioural-analytics-tracker-core";
 import { getScriptAttribute } from "./util/script-attribute";
 
-const endpointURL = getScriptAttribute("data-dsn");
-if (!endpointURL)
+const dsn = getScriptAttribute("data-dsn");
+if (!dsn)
   throw new Error(
     "Behavioural Analytics: Missing DSN. Please refer to the integration guide."
   );
-const tracker = new Tracker({ endpointURL });
+const tracker = new Tracker({ dsn });
 
-const trackPageView = () => tracker.trackEvent("pageview");
+const trackPageView = () => tracker.trackPageView();
 
 window.addEventListener("pageshow", trackPageView);
 

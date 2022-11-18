@@ -6,7 +6,7 @@ jest.mock("../../src/util/cookies");
 jest.mock("../../src/util/uuid");
 
 import { getCookie, setCookie } from "../../src/util/cookies";
-import { uuidv4 } from "../../src/util//uuid";
+import { uuidv4 } from "../../src/util/uuid";
 
 describe("visitorId", () => {
   describe("when the cookie is already set", () => {

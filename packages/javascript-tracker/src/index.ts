@@ -1,0 +1,32 @@
+import {
+  Tracker,
+  TrackerEventProperties,
+  TrackerEventType,
+  TrackerOptions,
+} from "@elastic/behavioural-analytics-tracker-core";
+
+let sharedTracker: Tracker | null = null;
+
+function getSharedTracker(): Tracker {
+  if (sharedTracker === null) {
+    throw new Error("Behavioural Analytics: Tracker not initialized.");
+  }
+
+  return sharedTracker;
+}
+
+export function createTracker(options: TrackerOptions) {
+  sharedTracker = new Tracker(options);
+  return sharedTracker;
+}
+
+export function trackEvent(
+  eventType: TrackerEventType,
+  properties: TrackerEventProperties
+) {
+  return getSharedTracker()?.trackEvent(eventType, properties);
+}
+
+export function trackPageView(properties?: TrackerEventProperties) {
+  return getSharedTracker()?.trackPageView(properties);
+}
