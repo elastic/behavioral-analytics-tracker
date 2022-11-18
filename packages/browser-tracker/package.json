@@ -2,7 +2,8 @@
   "name": "@elastic/behavioural-analytics-browser-tracker",
   "version": "0.0.1",
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "deploy": "cp dist/index.global.js ../../apps/sandbox/public/behavioural-analytics-browser-tracker.js"
   },
   "devDependencies": {
     "@elastic/behavioural-analytics-tracker-core": "0.0.1",
