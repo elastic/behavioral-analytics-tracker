@@ -2,6 +2,7 @@
   "name": "@elastic/behavioural-analytics-tracker-core",
   "version": "0.0.1",
   "main": "src/index.ts",
+  "private": true,
   "scripts": {
     "test": "jest"
   },

@@ -11,9 +11,10 @@ export default defineConfig([
   {
     entry: ["src/index.ts"],
     ...commonConfig,
-    format: ["iife"],
+    format: "iife",
     outDir: "dist",
     minify: true,
+    legacyOutput: true,
     globalName: "elasticAnalyticsDefault",
     footer: {
       js: "var elasticAnalytics = elasticAnalyticsDefault.default"

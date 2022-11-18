@@ -2,6 +2,7 @@
   "name": "@elastic/behavioural-analytics-javascript-tracker",
   "version": "0.0.1",
   "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "sideEffects": false,
   "exports": {
     ".": "./dist/index.js"
