@@ -19,3 +19,11 @@ All packages are versioned and published using changesets. For convenience, the 
 - `yarn add-change`: Create a new changeset. Run every time you make a change to the packages. You will be prompted to select the packages that have changed and the type of change. A changeset file will be created in the `.changeset` folder. You can have multiple changesets in the same PR.
 - `yarn version-packages`: Bump the version of the packages based on the changesets. Run before publishing.
 - `yarn publish-packages`: Publish the packages to npm. Run after versioning.
+
+## Updating the distribution
+
+The `browser-tracker` is distributed as a script that is part of the ent-search distribution. When the `browser-tracker` is updated, the distribution needs to be updated as well. To do so, run the following command:
+
+```bash
+make deploy ent_search_dir=<path-to-ent-search>
+```
