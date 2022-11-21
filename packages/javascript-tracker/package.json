@@ -1,20 +1,26 @@
 {
   "name": "@elastic/behavioural-analytics-javascript-tracker",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "sideEffects": false,
   "exports": {
     ".": "./dist/index.js"
   },
+  "files": [
+    "dist/"
+  ],
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsup",
     "test": "jest"
   },
   "devDependencies": {
-    "@elastic/behavioural-analytics-tracker-core": "0.0.1",
+    "@elastic/behavioural-analytics-tracker-core": "1.0.0",
     "tsconfig": "*",
     "tsup": "^6.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
