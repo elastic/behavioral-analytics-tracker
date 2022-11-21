@@ -4,7 +4,7 @@ import path from "path";
 const commonConfig = {
   clean: true,
   dts: true,
-  sourcemap: true,
+  sourcemap: false,
   tsconfig: path.resolve(__dirname, "./tsconfig.json"),
 };
 export default defineConfig([
@@ -16,6 +16,7 @@ export default defineConfig([
     minify: true,
     legacyOutput: true,
     globalName: "elasticAnalyticsDefault",
+    legacyOutput: true,
     footer: {
       js: "var elasticAnalytics = elasticAnalyticsDefault.default"
     }
