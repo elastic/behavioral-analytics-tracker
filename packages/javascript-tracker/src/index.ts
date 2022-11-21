@@ -20,6 +20,10 @@ export function createTracker(options: TrackerOptions) {
   return sharedTracker;
 }
 
+export function getTracker() {
+  return getSharedTracker();
+}
+
 export function trackEvent(
   eventType: TrackerEventType,
   properties: TrackerEventProperties

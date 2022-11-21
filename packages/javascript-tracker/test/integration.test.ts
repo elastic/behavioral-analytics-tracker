@@ -2,6 +2,7 @@ import {
   createTracker,
   trackPageView,
   trackEvent,
+  getTracker,
 } from "@elastic/behavioural-analytics-javascript-tracker";
 
 describe("Integration", () => {
@@ -20,6 +21,18 @@ describe("Integration", () => {
     expect(() => {
       trackEvent("click", { test: "testCustom" });
     }).toThrowError("Behavioural Analytics: Tracker not initialized.");
+  });
+
+  test("get tracker", () => {
+    expect(() => {
+      getTracker();
+    }).toThrow();
+
+    createTracker({
+      dsn: "http://localhost:9200",
+    });
+
+    expect(getTracker()).toBeDefined();
   });
 
   test("Dispatch track page view", () => {
