@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "tsup",
-    "deploy": "cp dist/index.global.js ../../apps/sandbox/public/behavioural-analytics-browser-tracker.js"
+    "deploy": "cp dist/iife/index.js ../../apps/sandbox/public/behavioural-analytics-browser-tracker.js"
   },
   "devDependencies": {
     "@elastic/behavioural-analytics-tracker-core": "1.0.0",
