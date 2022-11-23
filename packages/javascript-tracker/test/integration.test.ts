@@ -74,5 +74,6 @@ describe("Integration", () => {
     });
 
     expect(eventProperties.user_uuid).toBeDefined();
+    expect(eventProperties.session_uuid).toBeDefined();
   });
 });

@@ -49,6 +49,17 @@ describe("Tracker", () => {
           url: "http://localhost/",
         });
       });
+
+      test("merge user provided data with session data", () => {
+        tracker.trackEvent("pageview");
+        const [_, encodedPayload] = (navigator.sendBeacon as jest.Mock).mock
+          .lastCall;
+
+        expect(JSON.parse(encodedPayload)).toMatchObject({
+          user_uuid: expect.any(String),
+          session_uuid: expect.any(String),
+        });
+      });
     });
 
     describe("using XMLHttpRequest", () => {
@@ -109,6 +120,16 @@ describe("Tracker", () => {
             userData: "user data value",
           },
           url: "http://localhost/",
+        });
+      });
+
+      test("merge user provided data with session data", () => {
+        tracker.trackEvent("pageview");
+        const [encodedPayload] = sendXHRMock.mock.lastCall;
+
+        expect(JSON.parse(encodedPayload)).toMatchObject({
+          user_uuid: expect.any(String),
+          session_uuid: expect.any(String),
         });
       });
     });
