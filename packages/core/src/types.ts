@@ -13,4 +13,11 @@ export type TrackerEventType = "pageview" | "search" | "click";
 export interface TrackerOptions {
   dsn: string;
   dataProviders?: Record<string, DataProvider>;
+  userToken?: string | (() => string);
+  userTokenExpirationDate?: number;
+}
+
+export interface UserSessionOptions {
+  userToken?: string;
+  userTokenExpirationInterval?: number;
 }
