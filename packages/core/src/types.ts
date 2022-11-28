@@ -10,12 +10,15 @@ export type DataProvider = (
 ) => TrackerEventProperties;
 export type TrackerEventType = "pageview" | "search" | "click";
 
-export interface TrackerOptions {
-  dsn: string;
-  dataProviders?: Record<string, DataProvider>;
+export type TrackerUserTokenProperties = {
   userToken?: string | (() => string);
   userTokenExpirationDate?: number;
 }
+
+export type TrackerOptions = {
+  dsn: string;
+  dataProviders?: Record<string, DataProvider>;
+} & TrackerUserTokenProperties;
 
 export interface UserSessionOptions {
   userToken?: string;

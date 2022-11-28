@@ -1,14 +1,28 @@
-import { Tracker } from "@elastic/behavioural-analytics-tracker-core";
+import { Tracker, TrackerUserTokenProperties } from "@elastic/behavioural-analytics-tracker-core";
 import { getScriptAttribute } from "./util/script-attribute";
 
 const dsn = getScriptAttribute("data-dsn");
 if (!dsn)
   throw new Error(
-    "Behavioural Analytics: Missing DSN. Please refer to the integration guide."
+    "Behavioral Analytics: Missing DSN. Please refer to the integration guide."
   );
-const tracker = new Tracker({ dsn });
+  
+let tracker: Tracker | null = null;
 
-const trackPageView = () => tracker.trackPageView();
+const createTracker = (options?: TrackerUserTokenProperties) => { 
+  tracker = new Tracker({ ...options, dsn })
+
+  return tracker;
+}
+
+const trackPageView = () => {
+  if(!tracker) {
+    throw new Error(
+      "Behavioral Analytics: Tracker is not created. Please initialize the tracker using createTracker"
+    );
+  }
+  tracker.trackPageView();
+}
 
 window.addEventListener("pageshow", trackPageView);
 
