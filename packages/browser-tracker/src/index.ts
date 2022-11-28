@@ -9,7 +9,11 @@ if (!dsn)
   
 let tracker: Tracker | null = null;
 
-const createTracker = (options?: TrackerUserTokenProperties) => {  tracker = new Tracker({ ...options, dsn }) }
+const createTracker = (options?: TrackerUserTokenProperties) => { 
+  tracker = new Tracker({ ...options, dsn })
+
+  return tracker;
+}
 
 const trackPageView = () => {
   if(!tracker) {
