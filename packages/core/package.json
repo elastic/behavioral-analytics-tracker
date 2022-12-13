@@ -1,5 +1,5 @@
 {
-  "name": "@elastic/behavioural-analytics-tracker-core",
+  "name": "@elastic/behavioral-analytics-tracker-core",
   "version": "1.0.0",
   "main": "src/index.ts",
   "private": true,

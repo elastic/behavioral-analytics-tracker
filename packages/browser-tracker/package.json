@@ -1,13 +1,13 @@
 {
-  "name": "@elastic/behavioural-analytics-browser-tracker",
+  "name": "@elastic/behavioral-analytics-browser-tracker",
   "version": "1.0.0",
   "private": true,
   "scripts": {
     "build": "tsup",
-    "deploy": "cp dist/iife/index.js ../../apps/sandbox/public/behavioural-analytics-browser-tracker.js"
+    "deploy": "cp dist/iife/index.js ../../apps/sandbox/public/behavioral-analytics-browser-tracker.js"
   },
   "devDependencies": {
-    "@elastic/behavioural-analytics-tracker-core": "1.0.0",
+    "@elastic/behavioral-analytics-tracker-core": "1.0.0",
     "tsconfig": "*",
     "tsup": "^6.3.0"
   }

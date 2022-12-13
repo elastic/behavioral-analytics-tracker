@@ -3,13 +3,13 @@ import {
   TrackerEventProperties,
   TrackerEventType,
   TrackerOptions,
-} from "@elastic/behavioural-analytics-tracker-core";
+} from "@elastic/behavioral-analytics-tracker-core";
 
 let sharedTracker: Tracker | null = null;
 
 function getSharedTracker(): Tracker {
   if (sharedTracker === null) {
-    throw new Error("Behavioural Analytics: Tracker not initialized.");
+    throw new Error("behavioral Analytics: Tracker not initialized.");
   }
 
   return sharedTracker;
