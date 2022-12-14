@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import { createTracker, trackPageView, trackEvent } from "@elastic/behavioural-analytics-javascript-tracker"
+import { createTracker, trackPageView, trackEvent } from "@elastic/behavioral-analytics-javascript-tracker"
 import {
   createBrowserRouter,
   RouterProvider,
@@ -23,6 +23,11 @@ const JavascriptTracker = () => {
 };
 
 const BrowserTracker = () => {
+
+  useEffect(() => {
+    // @ts-ignore
+    window.elasticAnalytics.createTracker();
+  }, [])
 
   return (
     <div className="App"><span className='click-event' onClick={() => {
