@@ -1,4 +1,4 @@
-# @elastic/behavioural-analytics-browser-tracker
+# @elastic/behavioral-analytics-browser-tracker
 
 ## 1.0.0
 

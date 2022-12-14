@@ -1,4 +1,4 @@
-# @elastic/behavioural-analytics-javascript-tracker
+# @elastic/behavioral-analytics-javascript-tracker
 
 ## 1.0.0
 

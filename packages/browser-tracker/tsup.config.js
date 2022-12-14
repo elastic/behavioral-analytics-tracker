@@ -16,7 +16,6 @@ export default defineConfig([
     minify: true,
     legacyOutput: true,
     globalName: "elasticAnalyticsDefault",
-    legacyOutput: true,
     footer: {
       js: "var elasticAnalytics = elasticAnalyticsDefault.default"
     }

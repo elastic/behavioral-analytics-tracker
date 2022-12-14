@@ -5,8 +5,8 @@
 You can install the tracker using npm or yarn:
 
 ```bash
-yarn add @elastic/behavioural-analytics-javascript-tracker
-npm install @elastic/behavioural-analytics-javascript-tracker
+yarn add @elastic/behavioral-analytics-javascript-tracker
+npm install @elastic/behavioral-analytics-javascript-tracker
 ```
 
 ## Usage
@@ -20,19 +20,19 @@ import {
   createTracker,
   trackPageView,
   trackEvent,
-} from "@elastic/behavioural-analytics-javascript-tracker";
+} from "@elastic/behavioral-analytics-javascript-tracker";
 ```
 
 ### Initialise tracker
 
-use `createTracker` method to initialize the tracker with your DSN. You can find your DSN in the Behavioural Analytics UI under Collection > Integrate. You will then be able to use the tracker to send events to Behavioural Analytics.
+use `createTracker` method to initialize the tracker with your DSN. You can find your DSN in the behavioral Analytics UI under Collection > Integrate. You will then be able to use the tracker to send events to behavioral Analytics.
 
 ```javascript
 import {
   createTracker,
   trackPageView,
   trackEvent,
-} from "@elastic/behavioural-analytics-javascript-tracker";
+} from "@elastic/behavioral-analytics-javascript-tracker";
 
 createTracker({
   dsn: "https://my-analytics-dsn.elastic.co",
@@ -45,7 +45,7 @@ If you use [Search UI](github.com/elastic/search-ui), you can use the `Analytics
 
 ```javascript
 import AnalyticsPlugin from "@elastic/search-ui-analytics-plugin";
-import { getTracker } from "@elastic/behavioural-analytics-javascript-tracker";
+import { getTracker } from "@elastic/behavioral-analytics-javascript-tracker";
 
 const searchUIConfig = {
   ...
@@ -82,7 +82,7 @@ You can also dispatch custom events .
 
 ```javascript
 // track a page view
-import { trackEvent } from '@elastic/behavioural-analytics-javascript-tracker';
+import { trackEvent } from '@elastic/behavioral-analytics-javascript-tracker';
 
 const ProductDetailPage = (props) => {
 
@@ -106,7 +106,7 @@ const ProductDetailPage = (props) => {
 
 ## Common Issues
 
-### When I try to dispatch an event, I get the following error: `Behavioural Analytics: Tracker not initialized.`
+### When I try to dispatch an event, I get the following error: `behavioral Analytics: Tracker not initialized.`
 
 This means that the tracker has not been initialized. You need to initialize the tracker before you can dispatch events. You can do this by calling the `createTracker` method.
 
@@ -124,7 +124,7 @@ createTracker({
 
 #### Options
 
-**_ dsn _**: The DSN of your Behavioural Analytics project. You can find your DSN in the Behavioural Analytics UI under Collection > Integrate.
+**_ dsn _**: The DSN of your behavioral Analytics project. You can find your DSN in the behavioral Analytics UI under Collection > Integrate.
 
 ### `trackPageView`
 

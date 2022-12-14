@@ -1,3 +1,5 @@
+/* eslint-disable jest/valid-expect-in-promise */
+
 describe("Javascript tracker", () => {
   it("should work", () => {
     cy.intercept("https://my-analytics-dsn.elastic.co/events", { body: {} }).as(
@@ -22,6 +24,7 @@ describe("Javascript tracker", () => {
       });
     });
 
-    cy.getCookie("EA_VID").should("exist");
+    cy.getCookie("EA_SID").should("exist");
+    cy.getCookie("EA_UID").should("exist");
   });
 });

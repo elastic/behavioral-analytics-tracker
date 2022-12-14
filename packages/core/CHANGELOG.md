@@ -1,4 +1,4 @@
-# @elastic/behavioural-analytics-tracker-core
+# @elastic/behavioral-analytics-tracker-core
 
 ## 1.0.0
 
