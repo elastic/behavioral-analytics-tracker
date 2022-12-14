@@ -9,7 +9,7 @@ let sharedTracker: Tracker | null = null;
 
 function getSharedTracker(): Tracker {
   if (sharedTracker === null) {
-    throw new Error("behavioral Analytics: Tracker not initialized.");
+    throw new Error("Behavioral Analytics: Tracker not initialized.");
   }
 
   return sharedTracker;
