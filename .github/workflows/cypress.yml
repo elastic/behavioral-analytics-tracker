@@ -14,6 +14,6 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v4
         with:
-          project: ./apps/sandbox
+          working-directory: ./apps/sandbox
           build: npm run build
           start: npm start
