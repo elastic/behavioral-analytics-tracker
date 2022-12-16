@@ -4,9 +4,11 @@
   "main": "src/index.ts",
   "private": true,
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint **/*.ts*"
   },
   "devDependencies": {
+    "eslint-config-custom": "*",
     "tsconfig": "*"
   }
 }

@@ -8,6 +8,7 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "dev": "turbo run dev",
+    "lint": "turbo run lint",
     "add-change": "yarn changeset",
     "version-packages": "yarn changeset version",
     "publish-packages": "yarn changeset publish"
