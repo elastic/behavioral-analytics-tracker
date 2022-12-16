@@ -18,12 +18,14 @@
   "scripts": {
     "build": "tsup && yarn deploy",
     "test": "jest",
+    "lint": "eslint **/*.ts*",
     "deploy": "cp dist/iife/index.js ../../apps/sandbox/public/behavioral-analytics-browser-tracker.js"
   },
   "dependencies": {
     "@elastic/behavioral-analytics-tracker-core": "2.0.5"
   },
   "devDependencies": {
+    "eslint-config-custom": "*",
     "tsconfig": "*",
     "tsup": "^6.3.0"
   },

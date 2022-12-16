@@ -16,12 +16,14 @@
   },
   "scripts": {
     "build": "tsup",
+    "lint": "eslint **/*.ts*",
     "test": "jest"
   },
   "dependencies": {
     "@elastic/behavioral-analytics-tracker-core": "2.0.5"
   },
   "devDependencies": {
+    "eslint-config-custom": "*",
     "tsconfig": "*",
     "tsup": "^6.3.0"
   },
