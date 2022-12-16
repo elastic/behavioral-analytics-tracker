@@ -38,6 +38,14 @@ yarn test
 
 This will run the tests for all packages.
 
+### Linting
+
+All packages have linting rules. To run the linter, run the following command on the root of the repository:
+
+```bash
+yarn lint
+```
+
 ### Integration tests
 
 We have cypress tests for the repository and a small test app. Follow the instructions in the [README](apps/sandbox/README.md) to run the tests. You must run the `yarn deploy` script in the `packages/browser-tracker` directory to copy the distribution to the test app.
