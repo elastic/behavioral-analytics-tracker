@@ -136,14 +136,24 @@ This means that the tracker has not been initialized. You need to initialize the
 Initializes the tracker with the given DSN. This method must be called before you can use the tracker.
 
 ```javascript
+import { createTracker } from "@elastic/behavioral-analytics-javascript-tracker";
+
 createTracker({
   dsn: "https://my-analytics-dsn.elastic.co",
 });
 ```
 
-| Name | Type   | Description                                                                                                                      |
-| ---- | ------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| dsn  | string | The DSN of your behavioral Analytics project. You can find your DSN in the behavioral Analytics UI under Collection > Integrate. |
+#### Example
+
+```javascript
+createTracker({});
+```
+
+#### Parameters
+
+| Name    | Type           | Description                  |
+| ------- | -------------- | ---------------------------- |
+| options | TrackerOptions | The options for the tracker. |
 
 ### `trackPageView`
 
@@ -153,11 +163,38 @@ Tracks a page view event.
 trackPageView();
 ```
 
+#### Example
+
+```javascript
+import { trackPageView } from "@elastic/behavioral-analytics-javascript-tracker";
+
+trackPageView({
+  title: "Home Page",
+});
+```
+
+#### Parameters
+
+| Name       | Type                   | Description                  |
+| ---------- | ---------------------- | ---------------------------- |
+| properties | TrackerEventProperties | The properties of the event. |
+
 ### `trackEvent`
 
 Tracks a custom event.
 
+```ts
+trackEvent(
+  eventType: TrackerEventType,
+  properties: TrackerEventProperties = {}
+)
+```
+
+#### Example
+
 ```javascript
+import { trackEvent } from "@elastic/behavioral-analytics-javascript-tracker";
+
 trackEvent("click", {
   category: "product",
   action: "add_to_cart",
@@ -166,15 +203,35 @@ trackEvent("click", {
 });
 ```
 
-#### Options
+#### Parameters
 
-**_ event type _**: The type of event you want to track. This can be either `click`, `pageview` or `search`.
-**_ event properties _**: The properties of the event you want to track. These properties are specific to the event type.
+| Name       | Type                   | Description                  |
+| ---------- | ---------------------- | ---------------------------- |
+| eventType  | TrackerEventType       | The type of event to track.  |
+| properties | TrackerEventProperties | The properties of the event. |
 
 ### `getTracker`
 
 Returns the tracker instance. Useful when used to integrate with Search UI Analytics Plugin.
 
 ```javascript
+import { getTracker } from "@elastic/behavioral-analytics-javascript-tracker";
+
 const tracker = getTracker();
 ```
+
+## Types
+
+### TrackerEventType
+
+Enum value for the type of event to track. Can be one of "search", "click", "pageview" values.
+
+### TrackerOptions
+
+Options for the tracker.
+
+| Name                    | Type                   | Description                                                                                                                      |
+| ----------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| userToken               | () => string \| string | A string or a function that returns the user token.                                                                              |
+| userTokenExpirationDate | number                 | The expiration date of the user token.                                                                                           |
+| dsn                     | string                 | The DSN of your behavioral Analytics project. You can find your DSN in the behavioral Analytics UI under Collection > Integrate. |

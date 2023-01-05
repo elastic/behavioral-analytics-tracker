@@ -34,15 +34,23 @@ window.elasticAnalytics.createTracker({
 
 ## Methods
 
-### createTracker
+### `createTracker`
 
 Creates a tracker instance. This method must be called before you can use the tracker.
 
-```ts
-createTracker(
-  options: TrackerOptions = {}
-)
+```javascript
+createTracker(((options: TrackerOptions) = {}));
 ```
+
+#### Example
+
+```javascript
+window.elasticAnalytics.createTracker({
+  dsn: "https://my-analytics-dsn.elastic.co",
+});
+```
+
+#### Parameters
 
 | Name    | Type           | Description                  |
 | ------- | -------------- | ---------------------------- |
@@ -62,7 +70,7 @@ trackEvent(
 #### Example
 
 ```javascript
-trackEvent("click", {
+window.elasticAnalytics.trackEvent("click", {
   category: "product",
   action: "add_to_cart",
   label: "product_id",
@@ -70,7 +78,7 @@ trackEvent("click", {
 });
 ```
 
-### Parameters
+#### Parameters
 
 | Name       | Type                   | Description                  |
 | ---------- | ---------------------- | ---------------------------- |
@@ -86,6 +94,16 @@ trackPageView(
   properties: TrackerEventProperties = {}
 )
 ```
+
+#### Example
+
+```javascript
+window.elasticAnalytics.trackPageView({
+  title: "Home Page",
+});
+```
+
+#### Parameters
 
 | Name       | Type                   | Description                  |
 | ---------- | ---------------------- | ---------------------------- |
