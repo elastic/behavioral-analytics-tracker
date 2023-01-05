@@ -6,12 +6,11 @@ You can install the tracker using npm or yarn:
 
 ```bash
 yarn add @elastic/behavioral-analytics-javascript-tracker
+## OR
 npm install @elastic/behavioral-analytics-javascript-tracker
 ```
 
 ## Usage
-
-### Import tracker
 
 Import the tracker in your application.
 
@@ -36,6 +35,26 @@ import {
 
 createTracker({
   dsn: "https://my-analytics-dsn.elastic.co",
+});
+```
+
+## Token Fingerprints
+
+When `createTracker` is called, the tracker will store two fingerprints in the browser cookie:
+
+- User Token - a unique identifier for the user. Stored under `EA_UID` cookie. Default Time length is 24 hours from the first time the user visits the site.
+- Session Token - a unique identifier for the session. Stored under `EA_SID` cookie. Time length is 30 minutes from the last time the user visits the site.
+
+These fingerprints are used to identify the user across sessions.
+
+### Changing the User Token and time length
+
+You can change the User Token and time length by passing in the `userToken` and `userTokenTimeLength` parameters to the `createTracker` method.
+
+```js
+createTracker({
+  userToken: () => "my-user-token",
+  userTokenExpirationDate: 24 * 60 * 60 * 1000, // 24 hours
 });
 ```
 
@@ -114,7 +133,7 @@ This means that the tracker has not been initialized. You need to initialize the
 
 ### `createTracker`
 
-Initializes the tracker with the given DSN.
+Initializes the tracker with the given DSN. This method must be called before you can use the tracker.
 
 ```javascript
 createTracker({
@@ -122,9 +141,9 @@ createTracker({
 });
 ```
 
-#### Options
-
-**_ dsn _**: The DSN of your behavioral Analytics project. You can find your DSN in the behavioral Analytics UI under Collection > Integrate.
+| Name | Type   | Description                                                                                                                      |
+| ---- | ------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| dsn  | string | The DSN of your behavioral Analytics project. You can find your DSN in the behavioral Analytics UI under Collection > Integrate. |
 
 ### `trackPageView`
 
