@@ -54,7 +54,7 @@ You can change the User Token and time length by passing in the `userToken` and 
 ```js
 createTracker({
   userToken: () => "my-user-token",
-  userTokenExpirationDate: 24 * 60 * 60 * 1000, // 24 hours
+  userTokenExpirationDate: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
 });
 ```
 
