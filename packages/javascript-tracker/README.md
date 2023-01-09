@@ -6,12 +6,11 @@ You can install the tracker using npm or yarn:
 
 ```bash
 yarn add @elastic/behavioral-analytics-javascript-tracker
+## OR
 npm install @elastic/behavioral-analytics-javascript-tracker
 ```
 
 ## Usage
-
-### Import tracker
 
 Import the tracker in your application.
 
@@ -36,6 +35,26 @@ import {
 
 createTracker({
   dsn: "https://my-analytics-dsn.elastic.co",
+});
+```
+
+## Token Fingerprints
+
+When `createTracker` is called, the tracker will store two fingerprints in the browser cookie:
+
+- **User Token** - a unique identifier for the user. Stored under `EA_UID` cookie. Default Time length is 24 hours from the first time the user visits the site.
+- **Session Token** - a unique identifier for the session. Stored under `EA_SID` cookie. Time length is 30 minutes from the last time the user visits the site.
+
+These fingerprints are used to identify the user across sessions.
+
+### Changing the User Token and time length
+
+You can change the User Token and time length by passing in the `userToken` and `userTokenTimeLength` parameters to the `createTracker` method.
+
+```js
+createTracker({
+  userToken: () => "my-user-token",
+  userTokenExpirationDate: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
 });
 ```
 
@@ -114,17 +133,27 @@ This means that the tracker has not been initialized. You need to initialize the
 
 ### `createTracker`
 
-Initializes the tracker with the given DSN.
+Initializes the tracker with the given DSN. This method must be called before you can use the tracker.
 
 ```javascript
+import { createTracker } from "@elastic/behavioral-analytics-javascript-tracker";
+
 createTracker({
   dsn: "https://my-analytics-dsn.elastic.co",
 });
 ```
 
-#### Options
+#### Example
 
-**_ dsn _**: The DSN of your behavioral Analytics project. You can find your DSN in the behavioral Analytics UI under Collection > Integrate.
+```javascript
+createTracker({});
+```
+
+#### Parameters
+
+| Name    | Type           | Description                  |
+| ------- | -------------- | ---------------------------- |
+| options | TrackerOptions | The options for the tracker. |
 
 ### `trackPageView`
 
@@ -134,11 +163,38 @@ Tracks a page view event.
 trackPageView();
 ```
 
+#### Example
+
+```javascript
+import { trackPageView } from "@elastic/behavioral-analytics-javascript-tracker";
+
+trackPageView({
+  title: "Home Page",
+});
+```
+
+#### Parameters
+
+| Name       | Type                   | Description                  |
+| ---------- | ---------------------- | ---------------------------- |
+| properties | TrackerEventProperties | The properties of the event. |
+
 ### `trackEvent`
 
 Tracks a custom event.
 
+```ts
+trackEvent(
+  eventType: TrackerEventType,
+  properties: TrackerEventProperties = {}
+)
+```
+
+#### Example
+
 ```javascript
+import { trackEvent } from "@elastic/behavioral-analytics-javascript-tracker";
+
 trackEvent("click", {
   category: "product",
   action: "add_to_cart",
@@ -147,15 +203,35 @@ trackEvent("click", {
 });
 ```
 
-#### Options
+#### Parameters
 
-**_ event type _**: The type of event you want to track. This can be either `click`, `pageview` or `search`.
-**_ event properties _**: The properties of the event you want to track. These properties are specific to the event type.
+| Name       | Type                   | Description                  |
+| ---------- | ---------------------- | ---------------------------- |
+| eventType  | TrackerEventType       | The type of event to track.  |
+| properties | TrackerEventProperties | The properties of the event. |
 
 ### `getTracker`
 
 Returns the tracker instance. Useful when used to integrate with Search UI Analytics Plugin.
 
 ```javascript
+import { getTracker } from "@elastic/behavioral-analytics-javascript-tracker";
+
 const tracker = getTracker();
 ```
+
+## Types
+
+### TrackerEventType
+
+Enum value for the type of event to track. Can be one of "search", "click", "pageview" values.
+
+### TrackerOptions
+
+Options for the tracker.
+
+| Name                    | Type                   | Description                                                                                                                      |
+| ----------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| userToken               | () => string \| string | A string or a function that returns the user token.                                                                              |
+| userTokenExpirationDate | number                 | The expiration date of the user token.                                                                                           |
+| dsn                     | string                 | The DSN of your behavioral Analytics project. You can find your DSN in the behavioral Analytics UI under Collection > Integrate. |
