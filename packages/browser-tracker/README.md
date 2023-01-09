@@ -1,6 +1,6 @@
 # Browser Tracker
 
-This package provides a tracker for the browser. Instructions for integrating the browser tracker into your site can be found in the Behavioural Analytics Collection view, under the integrate tab.
+This package provides a tracker for the browser. Instructions for integrating the browser tracker into your site can be found in the Behavioural Analytics Collection view, under the **Integrate** tab.
 
 ## Usage
 
