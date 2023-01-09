@@ -13,9 +13,11 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsup",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint **/*.ts*"
   },
   "devDependencies": {
+    "eslint-config-custom": "*",
     "@elastic/behavioral-analytics-tracker-core": "1.0.0",
     "tsconfig": "*",
     "tsup": "^6.3.0"
