@@ -1,45 +1,50 @@
 import { Tracker } from "@elastic/behavioral-analytics-tracker-core";
 import type {
   TrackerEventType,
-  TrackerEventProperties,
-  TrackerUserTokenProperties,
+  EventInputProperties,
+  SearchClickEventInputProperties,
+  SearchEventInputProperties,
+  TrackerOptions,
 } from "@elastic/behavioral-analytics-tracker-core";
-import { getScriptAttribute } from "./util/script-attribute";
-
-const dsn = getScriptAttribute("data-dsn");
-if (!dsn)
-  throw new Error(
-    "Behavioral Analytics: Missing DSN. Please refer to the integration guide."
-  );
 
 let tracker: Tracker | null = null;
-let pendingTrackerEvents: Array<[TrackerEventType, TrackerEventProperties]> =
-  [];
+let pendingTrackerEvents: Array<[TrackerEventType, EventInputProperties]> = [];
 
-const trackerShim = {
-  createTracker: (options?: TrackerUserTokenProperties) => {
-    tracker = new Tracker({ ...options, dsn });
+export interface BrowserTracker {
+  createTracker: (options: TrackerOptions) => Tracker;
+  trackPageView: () => void;
+  trackSearchClick: (properties: SearchClickEventInputProperties) => void;
+  trackSearch: (properties: SearchEventInputProperties) => void;
+}
+
+const trackerShim: BrowserTracker = {
+  createTracker: (options: TrackerOptions) => {
+    tracker = new Tracker(options);
     pendingTrackerEvents.forEach(([eventType, properties]) => {
       tracker?.trackEvent(eventType, properties);
     });
     return tracker;
   },
-  trackEvent: (
-    eventType: TrackerEventType,
-    properties?: TrackerEventProperties
-  ) => {
+  trackPageView: () => {
     if (!tracker) {
-      pendingTrackerEvents.push([eventType, properties || {}]);
+      pendingTrackerEvents.push(["page_view", {}]);
       return;
     }
-    tracker.trackEvent(eventType, properties);
+    tracker.trackPageView();
   },
-  trackPageView: (properties?: TrackerEventProperties) => {
+  trackSearchClick: (properties: SearchClickEventInputProperties) => {
     if (!tracker) {
-      pendingTrackerEvents.push(["pageview", properties || {}]);
+      pendingTrackerEvents.push(["search_click", properties]);
       return;
     }
-    tracker.trackPageView(properties);
+    tracker.trackSearchClick(properties);
+  },
+  trackSearch: (properties: SearchEventInputProperties) => {
+    if (!tracker) {
+      pendingTrackerEvents.push(["search", properties]);
+      return;
+    }
+    tracker.trackSearch(properties);
   },
 };
 
