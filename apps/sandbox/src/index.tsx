@@ -16,7 +16,7 @@ declare module window {
 createTracker({
   apiKey: "cccc",
   collectionName: "test",
-  endpoint: "http://localhost:3000",
+  endpoint: "https://my-browser-analytics-dsn.elastic.co",
 })
 
 const JavascriptTracker = () => {
@@ -50,9 +50,9 @@ const JavascriptTracker = () => {
           ],
           total_results: 100
         },
-        sort: [{
+        sort: {
           name: "relevance"
-        }],
+        },
         search_application: "website",
       }
     })
@@ -60,6 +60,7 @@ const JavascriptTracker = () => {
 
   const trackSearchClickHandler = () => {
     trackSearchClick({
+      document: { id: "123", index: "products" },
       search: {
         "query": "laptop",
         "filters": [
@@ -72,15 +73,7 @@ const JavascriptTracker = () => {
         },
         results: {
           items: [
-            {
-              document: {
-                id: "123",
-                index: "products"
-              },
-              page: {
-                url: "http://localhost:3000/javascript-tracker"
-              }
-            }
+            
           ],
           total_results: 100
         },
@@ -110,15 +103,16 @@ const BrowserTrackerView = () => {
   
   useEffect(() => {
     window.elasticAnalytics.createTracker({
-      apiKey: "key",
+      apiKey: "cccc",
       collectionName: "test",
-      endpoint: "http://localhost:3000",
+      endpoint: "https://my-browser-analytics-dsn.elastic.co/",
     });
   }, [])
 
   return (
     <div className="App">
-      <a href="#" className='click-event' onClick={() => {
+      <a href="#" className='click-event' onClick={(e) => {
+        e.preventDefault();
       window.elasticAnalytics.trackSearchClick({
         document: {
           id: "123",
@@ -135,12 +129,15 @@ const BrowserTrackerView = () => {
             items: [],
             total_results: 10
           },
-          sort: "relevance",
+          sort: {
+            name: "relevance"
+          },
           search_application: "website"
         }
         })
     }}>document click</a>
-          <a href="#" className='search-event' onClick={() => {
+          <a href="#" className='search-event' onClick={(e) => {
+            e.preventDefault();
       window.elasticAnalytics.trackSearch({
         search: {
           "query": "laptop",
@@ -166,7 +163,9 @@ const BrowserTrackerView = () => {
             ],
             total_results: 100
           },
-          sort: "relevance",
+          sort: {
+            name: "relevance"
+          },
           search_application: "website",
         }
       })
