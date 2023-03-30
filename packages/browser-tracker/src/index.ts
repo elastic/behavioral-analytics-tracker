@@ -1,4 +1,7 @@
-import { Tracker } from "@elastic/behavioral-analytics-tracker-core";
+import {
+  PageViewInputProperties,
+  Tracker,
+} from "@elastic/behavioral-analytics-tracker-core";
 import type {
   TrackerEventType,
   EventInputProperties,
@@ -7,12 +10,12 @@ import type {
   TrackerOptions,
 } from "@elastic/behavioral-analytics-tracker-core";
 
-let tracker: Tracker | null = null;
+let tracker: Tracker | undefined;
 let pendingTrackerEvents: Array<[TrackerEventType, EventInputProperties]> = [];
 
 export interface BrowserTracker {
   createTracker: (options: TrackerOptions) => Tracker;
-  trackPageView: () => void;
+  trackPageView: (properties: PageViewInputProperties) => void;
   trackSearchClick: (properties: SearchClickEventInputProperties) => void;
   trackSearch: (properties: SearchEventInputProperties) => void;
 }
@@ -25,12 +28,12 @@ const trackerShim: BrowserTracker = {
     });
     return tracker;
   },
-  trackPageView: () => {
+  trackPageView: (properties: PageViewInputProperties) => {
     if (!tracker) {
       pendingTrackerEvents.push(["page_view", {}]);
       return;
     }
-    tracker.trackPageView();
+    tracker.trackPageView(properties);
   },
   trackSearchClick: (properties: SearchClickEventInputProperties) => {
     if (!tracker) {
@@ -49,7 +52,7 @@ const trackerShim: BrowserTracker = {
 };
 
 const trackPageView = () => {
-  trackerShim.trackPageView();
+  trackerShim.trackPageView({});
 };
 
 window.addEventListener("pageshow", trackPageView);

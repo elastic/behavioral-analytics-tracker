@@ -24,7 +24,7 @@ type SortAttribute = {
 
 export type SearchEventAttribute = {
   query: string;
-  filters: SearchFilterAttribute[];
+  filters?: SearchFilterAttribute[];
   search_application?: string;
   page?: {
     current: number;
@@ -59,7 +59,10 @@ export type EventProperties = {
   user?: UserEventAttribute;
 };
 
-export type DataProvider = (event: EventProperties) => EventProperties;
+export type DataProvider = (
+  eventType: TrackerEventType,
+  event: EventProperties
+) => EventProperties;
 
 export type TrackerEventType = "page_view" | "search" | "search_click";
 
@@ -124,7 +127,9 @@ export type SearchClickEventInputProperties =
   | SearchClickEventInputWithPageProperties
   | SearchClickEventInputWithDocumentProperties;
 
-export interface PageViewInputProperties {}
+export interface PageViewInputProperties {
+  document?: DocumentAttribute;
+}
 
 export type EventInputProperties =
   | SearchClickEventInputProperties

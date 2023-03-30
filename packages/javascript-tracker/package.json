@@ -3,14 +3,11 @@
   "version": "1.0.0",
   "main": "./dist/index.js",
   "sideEffects": false,
-  "type": "module",
   "types": "./dist/index.d.ts",
-  "jsdelivr": "dist/umd/index.global.js",
-  "unpkg": "dist/umd/index.global.js",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./package": "./package.json",
@@ -23,7 +20,8 @@
   "devDependencies": {
     "@elastic/behavioral-analytics-tracker-core": "1.0.0",
     "tsconfig": "*",
-    "tsup": "^6.3.0"
+    "tsup": "^6.3.0",
+    "blob-polyfill": "^7.0.20220408"
   },
   "publishConfig": {
     "access": "public"

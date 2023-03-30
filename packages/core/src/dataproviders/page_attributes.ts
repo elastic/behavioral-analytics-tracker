@@ -1,6 +1,10 @@
-import { EventProperties, PageEventAttribute } from "../types";
+import {
+  EventProperties,
+  PageEventAttribute,
+  TrackerEventType,
+} from "../types";
 
-export default (properties: EventProperties) => {
+export default (_: TrackerEventType, properties: EventProperties) => {
   const referrer = document.referrer || "";
 
   return {

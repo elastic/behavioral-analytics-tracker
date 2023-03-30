@@ -7,16 +7,18 @@ import {
   SearchEventInputProperties,
   EventInputProperties,
   SearchClickEventInputProperties,
+  PageViewInputProperties,
 } from "./types";
 import { UserSessionStore } from "./user_session_store";
 
 export const processEvent = (
+  action: TrackerEventType,
   event: EventInputProperties,
   dataProviders: Record<string, DataProvider>
 ) => {
   return Object.values(dataProviders).reduce<EventProperties>(
     (props, dataProvider) => {
-      return dataProvider(props);
+      return dataProvider(action, props);
     },
     { ...event }
   ) as EventProperties;
@@ -57,6 +59,7 @@ export class Tracker {
     const userSessionAttributes = this.getUserSession();
 
     const eventData = processEvent(
+      action,
       {
         ...event,
         ...userSessionAttributes,
@@ -84,8 +87,8 @@ export class Tracker {
     }
   }
 
-  trackPageView() {
-    this.trackEvent("page_view", {});
+  trackPageView(properties?: PageViewInputProperties) {
+    this.trackEvent("page_view", properties || {});
   }
 
   trackSearchClick(properties: SearchClickEventInputProperties) {
