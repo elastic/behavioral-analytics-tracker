@@ -70,21 +70,12 @@ export class Tracker {
     const encodedPayload = JSON.stringify(eventData);
     const queryString = this.debug ? "?debug=true" : "";
     const eventTrackerURL = `${this.apiURL}/${action}${queryString}`;
-    const headers = {
-      type: "application/json",
-      authorization: `Basic ${this.apiKey}`,
-    };
-    if (navigator.sendBeacon != null) {
-      const blob = new Blob([encodedPayload], headers);
-      navigator.sendBeacon(eventTrackerURL, blob);
-    } else {
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", eventTrackerURL, true);
-      xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.setRequestHeader("Authorization", `Basic ${this.apiKey}`);
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", eventTrackerURL, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("Authorization", `Basic ${this.apiKey}`);
 
-      xhr.send(encodedPayload);
-    }
+    xhr.send(encodedPayload);
   }
 
   trackPageView(properties?: PageViewInputProperties) {

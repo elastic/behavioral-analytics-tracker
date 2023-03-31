@@ -5,16 +5,10 @@ import {
   trackSearch,
   trackSearchClick,
 } from "@elastic/behavioral-analytics-javascript-tracker";
-import { EventProperties } from "@elastic/behavioral-analytics-tracker-core";
-// @ts-ignore
-import { Blob } from "blob-polyfill";
-globalThis.Blob = Blob;
+import mock from "xhr-mock";
 
 describe("Integration", () => {
-  beforeEach(() => {
-    // @ts-ignore
-    navigator.sendBeacon = jest.fn(() => {});
-  });
+  beforeEach(() => mock.setup());
 
   test("exports", () => {
     expect(createTracker).toBeDefined();
@@ -45,77 +39,119 @@ describe("Integration", () => {
 
   test("Dispatch track page view", async () => {
     createTracker({
-      endpoint: "http://127.0.0.1:3000",
+      endpoint: "http://127.0.0.1:4000",
       apiKey: "sdddd",
       collectionName: "collection",
     });
 
-    trackPageView();
+    expect.assertions(2);
 
-    const beaconCall = (navigator.sendBeacon as jest.Mock).mock.calls[0];
-    expect(beaconCall[0]).toEqual(
-      "http://127.0.0.1:3000/_application/analytics/collection/event/page_view"
+    mock.post(
+      "http://127.0.0.1:4000/_application/analytics/collection/event/page_view",
+      (req, res) => {
+        expect(req.header("authorization")).toEqual("Basic sdddd");
+
+        expect(JSON.parse(req.body())).toMatchObject({
+          page: {
+            referrer: "",
+            title: "",
+            url: "http://localhost/",
+          },
+          session: {
+            id: expect.any(String),
+          },
+          user: {
+            id: expect.any(String),
+          },
+        });
+
+        return res.status(201).body("{}");
+      }
     );
-    const text = await (beaconCall[1] as Blob).text();
-    const eventProperties = JSON.parse(text);
-    expect(eventProperties).toMatchObject({
-      page: {
-        referrer: "",
-        title: "",
-        url: "http://localhost/",
-      },
-      session: {
-        id: expect.any(String),
-      },
-      user: {
-        id: expect.any(String),
-      },
-    });
+
+    trackPageView();
   });
 
   test("Dispatch search event", async () => {
     createTracker({
-      endpoint: "http://127.0.0.1:3000",
+      endpoint: "http://127.0.0.1:4000",
       apiKey: "sdddd",
       collectionName: "collection",
     });
+
+    expect.assertions(2);
+
+    mock.post(
+      "http://127.0.0.1:4000/_application/analytics/collection/event/search",
+      (req, res) => {
+        expect(req.header("authorization")).toEqual("Basic sdddd");
+
+        expect(JSON.parse(req.body())).toMatchObject({
+          page: {
+            referrer: "",
+            title: "",
+            url: "http://localhost/",
+          },
+          search: {
+            query: "ddd",
+          },
+          session: {
+            id: expect.any(String),
+          },
+          user: {
+            id: expect.any(String),
+          },
+        });
+
+        return res.status(201).body("{}");
+      }
+    );
 
     trackSearch({
       search: {
         query: "ddd",
       },
     });
-
-    const beaconCall = (navigator.sendBeacon as jest.Mock).mock.calls[0];
-    expect(beaconCall[0]).toEqual(
-      "http://127.0.0.1:3000/_application/analytics/collection/event/search"
-    );
-    const text = await (beaconCall[1] as Blob).text();
-    const eventProperties = JSON.parse(text);
-    expect(eventProperties).toMatchObject({
-      page: {
-        referrer: "",
-        title: "",
-        url: "http://localhost/",
-      },
-      search: {
-        query: "ddd",
-      },
-      session: {
-        id: expect.any(String),
-      },
-      user: {
-        id: expect.any(String),
-      },
-    });
   });
 
   test("Dispatch search click event", async () => {
     createTracker({
-      endpoint: "http://127.0.0.1:3000",
+      endpoint: "http://127.0.0.1:4000",
       apiKey: "sdddd",
       collectionName: "collection",
     });
+
+    expect.assertions(2);
+
+    mock.post(
+      "http://127.0.0.1:4000/_application/analytics/collection/event/search_click",
+      (req, res) => {
+        expect(req.header("authorization")).toEqual("Basic sdddd");
+
+        expect(JSON.parse(req.body())).toMatchObject({
+          page: {
+            referrer: "",
+            title: "",
+            url: "http://localhost/",
+          },
+          search: {
+            query: "ddd",
+          },
+          document: {
+            id: "1",
+            index: "products",
+          },
+          session: {
+            id: expect.any(String),
+          },
+          user: {
+            id: expect.any(String),
+          },
+        });
+
+        return res.status(201).body("{}");
+      }
+    );
 
     trackSearchClick({
       search: {
@@ -126,38 +162,11 @@ describe("Integration", () => {
         index: "products",
       },
     });
-
-    const beaconCall = (navigator.sendBeacon as jest.Mock).mock.calls[0];
-    expect(beaconCall[0]).toEqual(
-      "http://127.0.0.1:3000/_application/analytics/collection/event/search_click"
-    );
-    const text = await (beaconCall[1] as Blob).text();
-    const eventProperties = JSON.parse(text);
-    expect(eventProperties).toMatchObject({
-      page: {
-        referrer: "",
-        title: "",
-        url: "http://localhost/",
-      },
-      search: {
-        query: "ddd",
-      },
-      document: {
-        id: "1",
-        index: "products",
-      },
-      session: {
-        id: expect.any(String),
-      },
-      user: {
-        id: expect.any(String),
-      },
-    });
   });
 
   test("overriding the session", async () => {
     createTracker({
-      endpoint: "http://127.0.0.1:3000",
+      endpoint: "http://127.0.0.1:4000",
       apiKey: "sdddd",
       collectionName: "collection",
       user: {
@@ -165,6 +174,36 @@ describe("Integration", () => {
       },
     });
 
+    expect.assertions(1);
+
+    mock.post(
+      "http://127.0.0.1:4000/_application/analytics/collection/event/search_click",
+      (req, res) => {
+        expect(JSON.parse(req.body())).toMatchObject({
+          page: {
+            referrer: "",
+            title: "",
+            url: "http://localhost/",
+          },
+          search: {
+            query: "ddd",
+          },
+          document: {
+            id: "1",
+            index: "products",
+          },
+          session: {
+            id: expect.any(String),
+          },
+          user: {
+            id: "user-overriden-token",
+          },
+        });
+
+        return res.status(201).body("{}");
+      }
+    );
+
     trackSearchClick({
       search: {
         query: "ddd",
@@ -174,10 +213,5 @@ describe("Integration", () => {
         index: "products",
       },
     });
-
-    const beaconCall = (navigator.sendBeacon as jest.Mock).mock.calls[0];
-    const text = await (beaconCall[1] as Blob).text();
-    const eventProperties: EventProperties = JSON.parse(text);
-    expect(eventProperties.user?.id).toBe("user-overriden-token");
   });
 });

@@ -8,6 +8,6 @@
   },
   "devDependencies": {
     "tsconfig": "*",
-    "blob-polyfill": "^7.0.20220408"
+    "xhr-mock": "^2.5.1"
   }
 }
