@@ -95,7 +95,13 @@ You can then use the tracker to track page views.
 
 const SearchPage = (props) => {
   useEffect(() => {
-    trackPageView();
+    trackPageView({
+      // optional
+      document: {
+        id: "search-page",
+        index: "pages",
+      },
+    });
   }, []);
 
   return (
