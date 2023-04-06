@@ -4,16 +4,19 @@ import {
   TrackerEventType,
 } from "../types";
 
-export default (_: TrackerEventType, properties: EventProperties) => {
+export default (eventType: TrackerEventType, properties: EventProperties) => {
   const referrer = document.referrer || "";
 
-  return {
-    ...properties,
-    page: {
-      ...(properties.page || {}),
-      referrer: referrer,
-      url: window.location.href,
-      title: document.title,
-    } as PageEventAttribute,
-  };
+  if (eventType === "page_view") {
+    return {
+      ...properties,
+      page: {
+        ...(properties.page || {}),
+        referrer: referrer,
+        url: window.location.href,
+        title: document.title,
+      } as PageEventAttribute,
+    };
+  }
+  return properties;
 };

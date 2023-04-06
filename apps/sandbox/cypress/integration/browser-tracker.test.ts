@@ -63,7 +63,6 @@ describe("browser tracker", () => {
     cy.get(".search-event").click();
 
     cy.wait("@TrackerEvent").then((interception) => {
-      console.log(interception.request.body);
       expect(interception.request.body).to.deep.contains({
         search: {
           query: "laptop",
@@ -88,11 +87,6 @@ describe("browser tracker", () => {
         },
         user: { id: userId },
         session: { id: sessionId },
-        page: {
-          referrer: "",
-          url: "http://localhost:3000/browser-tracker",
-          title: "React App",
-        },
       });
       expect(interception.request.url).to.contain("/event/search");
     });

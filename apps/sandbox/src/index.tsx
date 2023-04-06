@@ -84,7 +84,7 @@ const JavascriptTracker = () => {
       },
       page: {
         url: "http://localhost:3000/javascript-tracker",
-        title: ""
+        title: "my product detail"
       }
     })
   }

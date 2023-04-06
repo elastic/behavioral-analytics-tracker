@@ -16,54 +16,137 @@ describe("Tracker", () => {
   });
 
   describe("trackEvent", () => {
-    describe("using sendBeacon", () => {
-      test("send data at the right URL", () => {
-        expect.assertions(2);
+    test("send data at the right URL - page_view event", () => {
+      expect.assertions(2);
 
-        mock.post(
-          "http://localhost:3000/_application/analytics/collection/event/page_view",
-          (req, res) => {
-            expect(req.header("authorization")).toEqual("Basic key");
+      mock.post(
+        "http://localhost:3000/_application/analytics/collection/event/page_view",
+        (req, res) => {
+          expect(req.header("authorization")).toEqual("Basic key");
 
-            expect(JSON.parse(req.body())).toMatchObject({
-              page: {
-                referrer: "",
-                title: "",
-                url: "http://localhost/",
-              },
-              session: {
-                id: expect.any(String),
-              },
-              user: {
-                id: expect.any(String),
-              },
-            });
+          expect(JSON.parse(req.body())).toMatchObject({
+            page: {
+              referrer: "",
+              title: "",
+              url: "http://localhost/",
+            },
+            session: {
+              id: expect.any(String),
+            },
+            user: {
+              id: expect.any(String),
+            },
+          });
 
-            return res.status(201).body("{}");
-          }
-        );
+          return res.status(201).body("{}");
+        }
+      );
 
-        tracker.trackPageView({});
+      tracker.trackPageView({});
+    });
+
+    test("send data at the right URL - search event", () => {
+      expect.assertions(3);
+
+      mock.post(
+        "http://localhost:3000/_application/analytics/collection/event/search",
+        (req, res) => {
+          expect(req.header("authorization")).toEqual("Basic key");
+
+          const response = JSON.parse(req.body());
+
+          expect(response).toMatchObject({
+            search: {
+              query: "query",
+            },
+            session: {
+              id: expect.any(String),
+            },
+            user: {
+              id: expect.any(String),
+            },
+          });
+
+          expect(response).not.toHaveProperty("page");
+          return res.status(201).body("{}");
+        }
+      );
+
+      tracker.trackSearch({
+        search: {
+          query: "query",
+        },
       });
+    });
 
-      test("applies data providers", async () => {
-        expect.assertions(2);
+    test("send data at the right URL - search click event", () => {
+      expect.assertions(5);
 
-        mock.post(
-          "http://localhost:3000/_application/analytics/collection/event/page_view",
-          (req, res) => {
-            expect(req.header("authorization")).toEqual("Basic key");
+      mock.post(
+        "http://localhost:3000/_application/analytics/collection/event/search_click",
+        (req, res) => {
+          expect(req.header("authorization")).toEqual("Basic key");
 
-            expect(JSON.parse(req.body())).toMatchObject({
-              foo: "value",
-            });
+          const response = JSON.parse(req.body());
 
-            return res.status(201).body("{}");
-          }
-        );
+          expect(response).toMatchObject({
+            search: {
+              query: "query",
+            },
+            session: {
+              id: expect.any(String),
+            },
+            user: {
+              id: expect.any(String),
+            },
+          });
 
-        tracker.trackPageView({});
+          expect(response).toHaveProperty("page");
+          expect(response.page).toHaveProperty(
+            "url",
+            "http://my-url-to-navigate/"
+          );
+          expect(response.document).toMatchInlineSnapshot(`
+            {
+              "id": "123",
+              "index": "1",
+            }
+          `);
+          return res.status(201).body("{}");
+        }
+      );
+
+      tracker.trackSearchClick({
+        search: {
+          query: "query",
+        },
+        page: {
+          url: "http://my-url-to-navigate/",
+        },
+        document: {
+          id: "123",
+          index: "1",
+        },
       });
+    });
+
+    test("applies data providers", async () => {
+      expect.assertions(2);
+
+      mock.post(
+        "http://localhost:3000/_application/analytics/collection/event/page_view",
+        (req, res) => {
+          expect(req.header("authorization")).toEqual("Basic key");
+
+          expect(JSON.parse(req.body())).toMatchObject({
+            foo: "value",
+          });
+
+          return res.status(201).body("{}");
+        }
+      );
+
+      tracker.trackPageView({});
     });
   });
 });
