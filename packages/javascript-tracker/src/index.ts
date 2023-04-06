@@ -1,4 +1,7 @@
 import {
+  PageViewInputProperties,
+  SearchClickEventInputProperties,
+  SearchEventInputProperties,
   Tracker,
   TrackerEventProperties,
   TrackerEventType,
@@ -31,6 +34,14 @@ export function trackEvent(
   return getSharedTracker()?.trackEvent(eventType, properties);
 }
 
-export function trackPageView(properties?: TrackerEventProperties) {
+export function trackPageView(properties?: PageViewInputProperties) {
   return getSharedTracker()?.trackPageView(properties);
+}
+
+export function trackSearch(properties: SearchEventInputProperties) {
+  return getSharedTracker()?.trackSearch(properties);
+}
+
+export function trackSearchClick(properties: SearchClickEventInputProperties) {
+  return getSharedTracker()?.trackSearchClick(properties);
 }

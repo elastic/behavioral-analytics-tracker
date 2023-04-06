@@ -1,15 +1,7 @@
-import eventType from './event-type';
-import pageReferrer from './page-referrer';
-import pageUrl from './page-url';
+import pageAttributes from "./page_attributes";
 
-export {
-  eventType,
-  pageReferrer,
-  pageUrl
-};
+export { pageAttributes };
 
 export const DEFAULT_DATA_PROVIDERS = {
-  eventType,
-  pageReferrer,
-  pageUrl
-}
+  pageAttributes,
+};

@@ -9,6 +9,20 @@ const commonConfig = {
 };
 export default defineConfig([
   {
+    entry: ["./src/index.ts"],
+    ...commonConfig,
+    // NOTE: it means CJS will be .js and ESM will be .mjs
+    format: ["esm"],
+    outDir: "dist",
+  },
+  {
+    entry: ["./src/index.ts"],
+    ...commonConfig,
+    // NOTE: it means CJS will be .js and ESM will be .mjs
+    format: ["cjs"],
+    outDir: "dist",
+  },
+  {
     entry: ["src/index.ts"],
     ...commonConfig,
     format: "iife",

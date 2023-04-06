@@ -8,11 +8,22 @@ describe("default dataproviders", () => {
 
   it("should put the event in payload", () => {
     expect(
-      processEvent("pageview", { test: "test" }, DEFAULT_DATA_PROVIDERS)
+      processEvent(
+        "page_view",
+        {
+          search: {
+            query: "test",
+          },
+        },
+        DEFAULT_DATA_PROVIDERS
+      )
     ).toEqual({
-      event_data: { test: "test" },
-      event_type: "pageview",
-      url: "http://localhost/",
+      search: { query: "test" },
+      page: {
+        referrer: "",
+        title: "",
+        url: "http://localhost/",
+      },
     });
   });
 });

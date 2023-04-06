@@ -1,137 +1,152 @@
 import { Tracker } from "../src/tracker";
+import mock from "xhr-mock";
 
 describe("Tracker", () => {
+  beforeEach(() => mock.setup());
+
   const tracker = new Tracker({
-    dsn: "http://localhost/collection",
+    apiKey: "key",
+    endpoint: "http://localhost:3000",
+    collectionName: "collection",
     dataProviders: {
-      eventType: (eventType: any, payload: any) => {
-        return { ...payload, eventType };
-      },
-      foo: (_: any, payload: any) => {
-        return { ...payload, foo: "value" };
+      foo: (_, properties) => {
+        return { ...properties, foo: "value" };
       },
     },
   });
 
   describe("trackEvent", () => {
-    describe("using sendBeacon", () => {
-      beforeAll(() => (navigator.sendBeacon = jest.fn().mockImplementation()));
+    test("send data at the right URL - page_view event", () => {
+      expect.assertions(2);
 
-      test("send data at the right URL", () => {
-        tracker.trackEvent("pageview");
-        const [eventURL] = (navigator.sendBeacon as jest.Mock).mock.lastCall;
-        expect(eventURL).toEqual("http://localhost/collection/events");
-      });
+      mock.post(
+        "http://localhost:3000/_application/analytics/collection/event/page_view",
+        (req, res) => {
+          expect(req.header("authorization")).toEqual("Basic key");
 
-      test("applies data providers", () => {
-        tracker.trackEvent("pageview");
-        const [_, encodedPayload] = (navigator.sendBeacon as jest.Mock).mock
-          .lastCall;
+          expect(JSON.parse(req.body())).toMatchObject({
+            page: {
+              referrer: "",
+              title: "",
+              url: "http://localhost/",
+            },
+            session: {
+              id: expect.any(String),
+            },
+            user: {
+              id: expect.any(String),
+            },
+          });
 
-        expect(JSON.parse(encodedPayload)).toMatchObject({
-          eventType: "pageview",
-          foo: "value",
-          url: "http://localhost/",
-        });
-      });
+          return res.status(201).body("{}");
+        }
+      );
 
-      test("merge user provided data with the data providers", () => {
-        tracker.trackEvent("pageview", { userData: "user data value" });
-        const [_, encodedPayload] = (navigator.sendBeacon as jest.Mock).mock
-          .lastCall;
+      tracker.trackPageView({});
+    });
 
-        expect(JSON.parse(encodedPayload)).toMatchObject({
-          eventType: "pageview",
-          foo: "value",
-          event_data: {
-            userData: "user data value",
-          },
-          url: "http://localhost/",
-        });
-      });
+    test("send data at the right URL - search event", () => {
+      expect.assertions(3);
 
-      test("merge user provided data with session data", () => {
-        tracker.trackEvent("pageview");
-        const [_, encodedPayload] = (navigator.sendBeacon as jest.Mock).mock
-          .lastCall;
+      mock.post(
+        "http://localhost:3000/_application/analytics/collection/event/search",
+        (req, res) => {
+          expect(req.header("authorization")).toEqual("Basic key");
 
-        expect(JSON.parse(encodedPayload)).toMatchObject({
-          user_uuid: expect.any(String),
-          session_uuid: expect.any(String),
-        });
+          const response = JSON.parse(req.body());
+
+          expect(response).toMatchObject({
+            search: {
+              query: "query",
+            },
+            session: {
+              id: expect.any(String),
+            },
+            user: {
+              id: expect.any(String),
+            },
+          });
+
+          expect(response).not.toHaveProperty("page");
+          return res.status(201).body("{}");
+        }
+      );
+
+      tracker.trackSearch({
+        search: {
+          query: "query",
+        },
       });
     });
 
-    describe("using XMLHttpRequest", () => {
-      const openXHRMock = jest.fn().mockImplementation();
-      const setRequestHeaderMock = jest.fn().mockImplementation();
-      const sendXHRMock = jest.fn().mockImplementation();
+    test("send data at the right URL - search click event", () => {
+      expect.assertions(5);
 
-      beforeEach(() => {
-        Object.defineProperty(global.navigator, "sendBeacon", {
-          value: undefined,
-        });
-        // @ts-ignore
-        window.XMLHttpRequest = jest.fn().mockImplementation(() => {
-          return {
-            open: openXHRMock,
-            setRequestHeader: setRequestHeaderMock,
-            send: sendXHRMock,
-          };
-        });
+      mock.post(
+        "http://localhost:3000/_application/analytics/collection/event/search_click",
+        (req, res) => {
+          expect(req.header("authorization")).toEqual("Basic key");
+
+          const response = JSON.parse(req.body());
+
+          expect(response).toMatchObject({
+            search: {
+              query: "query",
+            },
+            session: {
+              id: expect.any(String),
+            },
+            user: {
+              id: expect.any(String),
+            },
+          });
+
+          expect(response).toHaveProperty("page");
+          expect(response.page).toHaveProperty(
+            "url",
+            "http://my-url-to-navigate/"
+          );
+          expect(response.document).toMatchInlineSnapshot(`
+            {
+              "id": "123",
+              "index": "1",
+            }
+          `);
+          return res.status(201).body("{}");
+        }
+      );
+
+      tracker.trackSearchClick({
+        search: {
+          query: "query",
+        },
+        page: {
+          url: "http://my-url-to-navigate/",
+        },
+        document: {
+          id: "123",
+          index: "1",
+        },
       });
+    });
 
-      test("send data at the right URL using a POST", () => {
-        tracker.trackEvent("pageview");
-        expect(openXHRMock).toHaveBeenCalledWith(
-          "POST",
-          "http://localhost/collection/events",
-          true
-        );
-      });
+    test("applies data providers", async () => {
+      expect.assertions(2);
 
-      test("send data as text/plain", () => {
-        tracker.trackEvent("pageview");
-        expect(setRequestHeaderMock).toHaveBeenCalledWith(
-          "Content-Type",
-          "text/plain"
-        );
-      });
+      mock.post(
+        "http://localhost:3000/_application/analytics/collection/event/page_view",
+        (req, res) => {
+          expect(req.header("authorization")).toEqual("Basic key");
 
-      test("applies data providers", () => {
-        tracker.trackEvent("pageview");
-        const [encodedPayload] = sendXHRMock.mock.lastCall;
+          expect(JSON.parse(req.body())).toMatchObject({
+            foo: "value",
+          });
 
-        expect(JSON.parse(encodedPayload)).toMatchObject({
-          eventType: "pageview",
-          foo: "value",
-          url: "http://localhost/",
-        });
-      });
+          return res.status(201).body("{}");
+        }
+      );
 
-      test("merge user provided data with the data providers", () => {
-        tracker.trackEvent("pageview", { userData: "user data value" });
-        const [encodedPayload] = sendXHRMock.mock.lastCall;
-
-        expect(JSON.parse(encodedPayload)).toMatchObject({
-          eventType: "pageview",
-          foo: "value",
-          event_data: {
-            userData: "user data value",
-          },
-          url: "http://localhost/",
-        });
-      });
-
-      test("merge user provided data with session data", () => {
-        tracker.trackEvent("pageview");
-        const [encodedPayload] = sendXHRMock.mock.lastCall;
-
-        expect(JSON.parse(encodedPayload)).toMatchObject({
-          user_uuid: expect.any(String),
-          session_uuid: expect.any(String),
-        });
-      });
+      tracker.trackPageView({});
     });
   });
 });

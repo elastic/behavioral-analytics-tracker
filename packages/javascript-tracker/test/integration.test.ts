@@ -1,25 +1,25 @@
 import {
   createTracker,
   trackPageView,
-  trackEvent,
   getTracker,
+  trackSearch,
+  trackSearchClick,
 } from "@elastic/behavioral-analytics-javascript-tracker";
+import mock from "xhr-mock";
 
 describe("Integration", () => {
-  beforeEach(() => {
-    // @ts-ignore
-    navigator.sendBeacon = jest.fn(() => {});
-  });
+  beforeEach(() => mock.setup());
 
   test("exports", () => {
     expect(createTracker).toBeDefined();
     expect(trackPageView).toBeDefined();
-    expect(trackEvent).toBeDefined();
+    expect(trackSearch).toBeDefined();
+    expect(trackSearchClick).toBeDefined();
   });
 
   test("Throws error when not initialised", () => {
     expect(() => {
-      trackEvent("click", { test: "testCustom" });
+      trackPageView();
     }).toThrowError("Behavioral Analytics: Tracker not initialized.");
   });
 
@@ -29,51 +29,189 @@ describe("Integration", () => {
     }).toThrow();
 
     createTracker({
-      dsn: "http://localhost:9200",
+      endpoint: "http://127.0.0.1:3000",
+      apiKey: "sdddd",
+      collectionName: "collection",
     });
 
     expect(getTracker()).toBeDefined();
   });
 
-  test("Dispatch track page view", () => {
+  test("Dispatch track page view", async () => {
     createTracker({
-      dsn: "http://localhost:9200",
+      endpoint: "http://127.0.0.1:4000",
+      apiKey: "sdddd",
+      collectionName: "collection",
     });
 
-    trackPageView({ test: "test" });
+    expect.assertions(2);
 
-    const beaconCall = (navigator.sendBeacon as jest.Mock).mock.calls[0];
-    expect(beaconCall[0]).toEqual("http://localhost:9200/events");
-    const eventProperties = JSON.parse(beaconCall[1]);
-    expect(eventProperties).toMatchObject({
-      event_data: {
-        test: "test",
-      },
-      event_type: "pageview",
-      url: "http://localhost/",
-    });
+    mock.post(
+      "http://127.0.0.1:4000/_application/analytics/collection/event/page_view",
+      (req, res) => {
+        expect(req.header("authorization")).toEqual("Basic sdddd");
 
-    expect(eventProperties.user_uuid).toBeDefined();
+        expect(JSON.parse(req.body())).toMatchObject({
+          page: {
+            referrer: "",
+            title: "",
+            url: "http://localhost/",
+          },
+          session: {
+            id: expect.any(String),
+          },
+          user: {
+            id: expect.any(String),
+          },
+        });
+
+        return res.status(201).body("{}");
+      }
+    );
+
+    trackPageView();
   });
 
-  test("Dispatch track event", () => {
+  test("Dispatch search event", async () => {
     createTracker({
-      dsn: "http://localhost:9200",
+      endpoint: "http://127.0.0.1:4000",
+      apiKey: "sdddd",
+      collectionName: "collection",
     });
 
-    trackEvent("click", { test: "testCustom" });
+    expect.assertions(2);
 
-    const beaconCall = (navigator.sendBeacon as jest.Mock).mock.calls[0];
-    expect(beaconCall[0]).toEqual("http://localhost:9200/events");
-    const eventProperties = JSON.parse(beaconCall[1]);
-    expect(eventProperties).toMatchObject({
-      event_data: {
-        test: "testCustom",
+    mock.post(
+      "http://127.0.0.1:4000/_application/analytics/collection/event/search",
+      (req, res) => {
+        expect(req.header("authorization")).toEqual("Basic sdddd");
+
+        expect(JSON.parse(req.body())).toMatchObject({
+          page: {
+            referrer: "",
+            title: "",
+            url: "http://localhost/",
+          },
+          search: {
+            query: "ddd",
+          },
+          session: {
+            id: expect.any(String),
+          },
+          user: {
+            id: expect.any(String),
+          },
+        });
+
+        return res.status(201).body("{}");
+      }
+    );
+
+    trackSearch({
+      search: {
+        query: "ddd",
       },
-      event_type: "click",
+    });
+  });
+
+  test("Dispatch search click event", async () => {
+    createTracker({
+      endpoint: "http://127.0.0.1:4000",
+      apiKey: "sdddd",
+      collectionName: "collection",
     });
 
-    expect(eventProperties.user_uuid).toBeDefined();
-    expect(eventProperties.session_uuid).toBeDefined();
+    expect.assertions(2);
+
+    mock.post(
+      "http://127.0.0.1:4000/_application/analytics/collection/event/search_click",
+      (req, res) => {
+        expect(req.header("authorization")).toEqual("Basic sdddd");
+
+        expect(JSON.parse(req.body())).toMatchObject({
+          page: {
+            referrer: "",
+            title: "",
+            url: "http://localhost/",
+          },
+          search: {
+            query: "ddd",
+          },
+          document: {
+            id: "1",
+            index: "products",
+          },
+          session: {
+            id: expect.any(String),
+          },
+          user: {
+            id: expect.any(String),
+          },
+        });
+
+        return res.status(201).body("{}");
+      }
+    );
+
+    trackSearchClick({
+      search: {
+        query: "ddd",
+      },
+      document: {
+        id: "1",
+        index: "products",
+      },
+    });
+  });
+
+  test("overriding the session", async () => {
+    createTracker({
+      endpoint: "http://127.0.0.1:4000",
+      apiKey: "sdddd",
+      collectionName: "collection",
+      user: {
+        token: "user-overriden-token",
+      },
+    });
+
+    expect.assertions(1);
+
+    mock.post(
+      "http://127.0.0.1:4000/_application/analytics/collection/event/search_click",
+      (req, res) => {
+        expect(JSON.parse(req.body())).toMatchObject({
+          page: {
+            referrer: "",
+            title: "",
+            url: "http://localhost/",
+          },
+          search: {
+            query: "ddd",
+          },
+          document: {
+            id: "1",
+            index: "products",
+          },
+          session: {
+            id: expect.any(String),
+          },
+          user: {
+            id: "user-overriden-token",
+          },
+        });
+
+        return res.status(201).body("{}");
+      }
+    );
+
+    trackSearchClick({
+      search: {
+        query: "ddd",
+      },
+      document: {
+        id: "1",
+        index: "products",
+      },
+    });
   });
 });

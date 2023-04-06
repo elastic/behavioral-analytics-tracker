@@ -1,9 +1,22 @@
 {
   "name": "@elastic/behavioral-analytics-browser-tracker",
   "version": "1.0.0",
-  "private": true,
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "jsdelivr": "dist/umd/index.global.js",
+  "unpkg": "dist/umd/index.global.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./package": "./package.json",
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && yarn deploy",
     "test": "jest",
     "deploy": "cp dist/iife/index.js ../../apps/sandbox/public/behavioral-analytics-browser-tracker.js"
   },
