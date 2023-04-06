@@ -52,9 +52,8 @@ describe("browser tracker", () => {
         user: { id: userId },
         session: { id: sessionId },
         page: {
-          referrer: "",
-          url: "http://localhost:3000/browser-tracker",
-          title: "React App",
+          url: "http://localhost:3000/javascript-tracker",
+          title: "my product detail",
         },
       });
       expect(interception.request.url).to.contain("/event/search_click");

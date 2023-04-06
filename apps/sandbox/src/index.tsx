@@ -118,6 +118,10 @@ const BrowserTrackerView = () => {
           id: "123",
           index: "products"
         },
+        page: {
+          url: "http://localhost:3000/javascript-tracker",
+          title: "my product detail"
+        },
         search: {
           query: "",
           filters: [],

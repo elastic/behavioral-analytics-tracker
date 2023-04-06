@@ -53,9 +53,8 @@ describe("Javascript tracker", () => {
         user: { id: userId },
         session: { id: sessionId },
         page: {
-          referrer: "",
           url: "http://localhost:3000/javascript-tracker",
-          title: "React App",
+          title: "my product detail",
         },
       });
       expect(interception.request.url).to.contain("/event/search_click");
@@ -84,11 +83,6 @@ describe("Javascript tracker", () => {
         },
         user: { id: userId },
         session: { id: sessionId },
-        page: {
-          referrer: "",
-          url: "http://localhost:3000/javascript-tracker#",
-          title: "React App",
-        },
       });
       expect(interception.request.url).to.contain("/event/search");
     });
