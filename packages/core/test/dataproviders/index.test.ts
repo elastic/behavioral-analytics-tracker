@@ -26,4 +26,20 @@ describe("default dataproviders", () => {
       },
     });
   });
+
+  it("should put the event in payload", () => {
+    expect(
+      processEvent(
+        "search",
+        {
+          search: {
+            query: "test",
+          },
+        },
+        DEFAULT_DATA_PROVIDERS
+      )
+    ).toEqual({
+      search: { query: "test" },
+    });
+  });
 });

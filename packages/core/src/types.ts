@@ -1,10 +1,5 @@
 export type TrackerEventProperties = Record<string, unknown>;
 
-export type SearchFilterAttribute = {
-  field: string;
-  value: string | string[];
-};
-
 export type DocumentAttribute = {
   index: string;
   id: string;
@@ -24,7 +19,7 @@ type SortAttribute = {
 
 export type SearchEventAttribute = {
   query: string;
-  filters?: SearchFilterAttribute[];
+  filters?: Record<string, string | string[]>;
   search_application?: string;
   page?: {
     current: number;

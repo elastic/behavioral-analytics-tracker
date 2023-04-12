@@ -41,7 +41,7 @@ describe("browser tracker", () => {
         document: { id: "123", index: "products" },
         search: {
           query: "",
-          filters: [],
+          filters: {},
           page: { current: 1, size: 10 },
           results: { items: [], total_results: 10 },
           sort: {
@@ -65,10 +65,11 @@ describe("browser tracker", () => {
       expect(interception.request.body).to.deep.contains({
         search: {
           query: "laptop",
-          filters: [
-            { field: "brand", value: ["apple"] },
-            { field: "price", value: ["1000-2000"] },
-          ],
+          filters: {
+            brand: ["apple"],
+            price: ["1000-2000"],
+            categories: "tv",
+          },
           page: { current: 1, size: 10 },
           results: {
             items: [

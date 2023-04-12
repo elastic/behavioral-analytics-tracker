@@ -29,9 +29,9 @@ const JavascriptTracker = () => {
     trackSearch({
       search: {
         "query": "laptop",
-        "filters": [ // optional
-          {"field": "brand", "value": ["apple"]},
-        ],
+        "filters": {
+          "brand" : ["apple"]
+        },
         page: {  //optional
           current: 1,
           size: 10,
@@ -63,10 +63,11 @@ const JavascriptTracker = () => {
       document: { id: "123", index: "products" },
       search: {
         "query": "laptop",
-        "filters": [
-          {"field": "brand", "value": ["apple"]},
-          {"field": "price", "value": ["1000-2000"]},
-        ],
+        "filters": {
+          "brand" : ["apple"],
+          "price": ["1000-2000"],
+          "categories": "tv"
+        },
         page: {
           current: 1,
           size: 10,
@@ -124,7 +125,7 @@ const BrowserTrackerView = () => {
         },
         search: {
           query: "",
-          filters: [],
+          filters: {},
           page: {
             current: 1,
             size: 10
@@ -145,10 +146,11 @@ const BrowserTrackerView = () => {
       window.elasticAnalytics.trackSearch({
         search: {
           "query": "laptop",
-          "filters": [
-            {"field": "brand", "value": ["apple"]},
-            {"field": "price", "value": ["1000-2000"]},
-          ],
+          "filters": {
+            "brand" : ["apple"],
+            "price": ["1000-2000"],
+            "categories": "tv"
+          },
           page: {
             current: 1,
             size: 10,
