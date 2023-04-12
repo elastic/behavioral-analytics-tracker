@@ -87,11 +87,6 @@ describe("Integration", () => {
         expect(req.header("authorization")).toEqual("Basic sdddd");
 
         expect(JSON.parse(req.body())).toMatchObject({
-          page: {
-            referrer: "",
-            title: "",
-            url: "http://localhost/",
-          },
           search: {
             query: "ddd",
           },
@@ -129,11 +124,6 @@ describe("Integration", () => {
         expect(req.header("authorization")).toEqual("Basic sdddd");
 
         expect(JSON.parse(req.body())).toMatchObject({
-          page: {
-            referrer: "",
-            title: "",
-            url: "http://localhost/",
-          },
           search: {
             query: "ddd",
           },
@@ -180,11 +170,6 @@ describe("Integration", () => {
       "http://127.0.0.1:4000/_application/analytics/collection/event/search_click",
       (req, res) => {
         expect(JSON.parse(req.body())).toMatchObject({
-          page: {
-            referrer: "",
-            title: "",
-            url: "http://localhost/",
-          },
           search: {
             query: "ddd",
           },

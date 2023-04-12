@@ -103,9 +103,9 @@ const BrowserTrackerView = () => {
   
   useEffect(() => {
     window.elasticAnalytics.createTracker({
-      apiKey: "cccc",
+      apiKey: "QWtWbGRJY0JDUFVxUmhQTDZKVWk6bzJTVDc0RGJUNFNSMU1RbTUtWmd2dw==",
       collectionName: "test",
-      endpoint: "https://my-browser-analytics-dsn.elastic.co/",
+      endpoint: "http://localhost:9200",
     });
   }, [])
 
