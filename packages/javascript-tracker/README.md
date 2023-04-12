@@ -5,9 +5,9 @@
 You can install the tracker using npm or yarn:
 
 ```bash
-yarn add @elastic/behavioral-analytics-javascript-tracker
+yarn add @elastic/behavioral-analytics-javascript-tracker@1
 ## OR
-npm install @elastic/behavioral-analytics-javascript-tracker
+npm install @elastic/behavioral-analytics-javascript-tracker@1
 ```
 
 ## Usage
