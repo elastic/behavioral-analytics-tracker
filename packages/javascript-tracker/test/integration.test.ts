@@ -49,7 +49,7 @@ describe("Integration", () => {
     mock.post(
       "http://127.0.0.1:4000/_application/analytics/collection/event/page_view",
       (req, res) => {
-        expect(req.header("authorization")).toEqual("Basic sdddd");
+        expect(req.header("authorization")).toEqual("Apikey sdddd");
 
         expect(JSON.parse(req.body())).toMatchObject({
           page: {
@@ -84,14 +84,9 @@ describe("Integration", () => {
     mock.post(
       "http://127.0.0.1:4000/_application/analytics/collection/event/search",
       (req, res) => {
-        expect(req.header("authorization")).toEqual("Basic sdddd");
+        expect(req.header("authorization")).toEqual("Apikey sdddd");
 
         expect(JSON.parse(req.body())).toMatchObject({
-          page: {
-            referrer: "",
-            title: "",
-            url: "http://localhost/",
-          },
           search: {
             query: "ddd",
           },
@@ -126,14 +121,9 @@ describe("Integration", () => {
     mock.post(
       "http://127.0.0.1:4000/_application/analytics/collection/event/search_click",
       (req, res) => {
-        expect(req.header("authorization")).toEqual("Basic sdddd");
+        expect(req.header("authorization")).toEqual("Apikey sdddd");
 
         expect(JSON.parse(req.body())).toMatchObject({
-          page: {
-            referrer: "",
-            title: "",
-            url: "http://localhost/",
-          },
           search: {
             query: "ddd",
           },
@@ -180,11 +170,6 @@ describe("Integration", () => {
       "http://127.0.0.1:4000/_application/analytics/collection/event/search_click",
       (req, res) => {
         expect(JSON.parse(req.body())).toMatchObject({
-          page: {
-            referrer: "",
-            title: "",
-            url: "http://localhost/",
-          },
           search: {
             query: "ddd",
           },

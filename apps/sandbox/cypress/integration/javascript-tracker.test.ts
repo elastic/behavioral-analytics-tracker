@@ -28,7 +28,7 @@ describe("Javascript tracker", () => {
       });
       expect(interception.request.url).to.contain("/event/page_view");
       expect(interception.request.headers.authorization).to.deep.equal(
-        "Basic cccc"
+        "Apikey cccc"
       );
     });
 

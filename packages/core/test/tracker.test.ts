@@ -22,7 +22,7 @@ describe("Tracker", () => {
       mock.post(
         "http://localhost:3000/_application/analytics/collection/event/page_view",
         (req, res) => {
-          expect(req.header("authorization")).toEqual("Basic key");
+          expect(req.header("authorization")).toEqual("Apikey key");
 
           expect(JSON.parse(req.body())).toMatchObject({
             page: {
@@ -51,7 +51,7 @@ describe("Tracker", () => {
       mock.post(
         "http://localhost:3000/_application/analytics/collection/event/search",
         (req, res) => {
-          expect(req.header("authorization")).toEqual("Basic key");
+          expect(req.header("authorization")).toEqual("Apikey key");
 
           const response = JSON.parse(req.body());
 
@@ -85,7 +85,7 @@ describe("Tracker", () => {
       mock.post(
         "http://localhost:3000/_application/analytics/collection/event/search_click",
         (req, res) => {
-          expect(req.header("authorization")).toEqual("Basic key");
+          expect(req.header("authorization")).toEqual("Apikey key");
 
           const response = JSON.parse(req.body());
 
@@ -136,7 +136,7 @@ describe("Tracker", () => {
       mock.post(
         "http://localhost:3000/_application/analytics/collection/event/page_view",
         (req, res) => {
-          expect(req.header("authorization")).toEqual("Basic key");
+          expect(req.header("authorization")).toEqual("Apikey key");
 
           expect(JSON.parse(req.body())).toMatchObject({
             foo: "value",

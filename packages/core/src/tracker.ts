@@ -73,7 +73,7 @@ export class Tracker {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", eventTrackerURL, true);
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.setRequestHeader("Authorization", `Basic ${this.apiKey}`);
+    xhr.setRequestHeader("Authorization", `Apikey ${this.apiKey}`);
 
     xhr.send(encodedPayload);
   }
