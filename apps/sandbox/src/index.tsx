@@ -196,7 +196,7 @@ const BrowserTrackerView = () => {
     window.elasticAnalytics.createTracker({
       apiKey: "cccc",
       collectionName: "test",
-      endpoint: "https://my-browser-analytics-dsn.elastic.co/",
+      endpoint: "https://my-browser-analytics-dsn.elastic.co",
     });
   }, [])
 
@@ -275,7 +275,7 @@ const BrowserTrackerWithSamplingView = () => {
     window.elasticAnalytics.createTracker({
       apiKey: "cccc",
       collectionName: "test",
-      endpoint: "https://my-browser-analytics-dsn.elastic.co/",
+      endpoint: "https://my-browser-analytics-dsn.elastic.co",
       sampling: 0,
     });
   }, [])
