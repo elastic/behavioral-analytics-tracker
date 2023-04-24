@@ -23,7 +23,7 @@ import {
 } from "@elastic/behavioral-analytics-javascript-tracker";
 ```
 
-### Initialise tracker
+### Initialize tracker
 
 use `createTracker` method to initialize the tracker with your DSN. You can find your DSN in the behavioral Analytics UI under Collection > Integrate. You will then be able to use the tracker to send events to behavioral Analytics.
 
@@ -68,6 +68,19 @@ createTracker({
   }
 });
 ```
+
+### Introducing sampling
+You don't always want all sessions to be sent to your Elastic cluster. You can introduce session-based sampling by adding `sampling` parameter to the `createTracker` method.
+
+If sampling is set to 1 (default), all sessions will send events. If sampling is set to 0, no sessions will send events.
+
+```js
+createTracker({
+  ...
+  sampling: 0.3, // 30% of sessions will send events to the server
+});
+```
+
 
 ### Integration with Search UI (TODO)
 
