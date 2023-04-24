@@ -1,15 +1,15 @@
 {
   "name": "@elastic/behavioral-analytics-browser-tracker",
   "version": "2.0.0-next.0",
-  "main": "./dist/index.mjs",
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
-  "jsdelivr": "dist/umd/index.global.js",
-  "unpkg": "dist/umd/index.global.js",
+  "jsdelivr": "dist/iife/index.js",
+  "unpkg": "dist/iife/index.js",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
     },
     "./package": "./package.json",
