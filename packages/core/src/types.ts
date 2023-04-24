@@ -96,6 +96,7 @@ export interface TrackerOptions {
    * @default false
    */
   debug?: boolean;
+  sampling?: number;
 }
 
 export interface SearchEventInputProperties {

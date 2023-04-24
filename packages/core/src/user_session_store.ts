@@ -2,11 +2,14 @@ import { getCookie, setCookie } from "./util/cookies";
 
 import { uuidv4 } from "./util/uuid";
 
+const DEFAULT_SAMPLING = 1;
 const DEFAULT_USER_EXPIRATION_INTERVAL = 24 * 60 * 60 * 1000;
 const DEFAULT_SESSION_EXPIRATION_INTERVAL = 30 * 60 * 1000;
+const DEFAULT_SESSION_SAMPLED_INTERVAL = DEFAULT_SESSION_EXPIRATION_INTERVAL;
 
 const COOKIE_USER_NAME = "EA_UID";
 const COOKIE_SESSION_NAME = "EA_SID";
+const COOKIE_SESSION_SAMPLED_NAME = "EA_SESSION_SAMPLED";
 
 interface UserSessionOptions {
   user: {
@@ -16,12 +19,14 @@ interface UserSessionOptions {
   session: {
     lifetime?: number;
   };
+  sampling?: number;
 }
 
 export class UserSessionStore {
   private userToken: string;
   private userTokenExpirationInterval: number;
   private sessionTokenExpirationInterval: number;
+  private sampling: number;
 
   constructor(userSessionOptions: UserSessionOptions) {
     this.userToken =
@@ -31,6 +36,11 @@ export class UserSessionStore {
     this.sessionTokenExpirationInterval =
       userSessionOptions.session.lifetime ||
       DEFAULT_SESSION_EXPIRATION_INTERVAL;
+    this.sampling = userSessionOptions.sampling === undefined ?  DEFAULT_SAMPLING : userSessionOptions.sampling;
+
+    if (!getCookie('EA_SESSION_SAMPLED')) {
+      this.updateSessionSampledExpire();
+    }
 
     if (this.userToken !== getCookie(COOKIE_USER_NAME)) {
       this.updateUserExpire();
@@ -46,6 +56,18 @@ export class UserSessionStore {
     }
 
     return userId;
+  }
+
+  isSessionSampled() {
+    return getCookie(COOKIE_SESSION_SAMPLED_NAME) == 'true';
+  }
+
+  updateSessionSampledExpire() {
+    const sampled = getCookie(COOKIE_SESSION_SAMPLED_NAME) || (Math.random() <= this.sampling).toString();
+
+    const expiresAt = new Date();
+    expiresAt.setMilliseconds(DEFAULT_SESSION_SAMPLED_INTERVAL);
+    setCookie(COOKIE_SESSION_SAMPLED_NAME, sampled, expiresAt);
   }
 
   getSessionUuid() {
