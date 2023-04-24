@@ -1,5 +1,6 @@
 import { Tracker } from "../src/tracker";
 import mock from "xhr-mock";
+import * as cookieUtils from "../src/util/cookies";
 
 describe("Tracker", () => {
   beforeEach(() => mock.setup());
@@ -16,6 +17,10 @@ describe("Tracker", () => {
   });
 
   describe("trackEvent", () => {
+    beforeEach(() => {
+      jest.spyOn(cookieUtils, 'getCookie').mockReturnValue('true');
+    });
+
     test("send data at the right URL - page_view event", () => {
       expect.assertions(2);
 
@@ -149,4 +154,21 @@ describe("Tracker", () => {
       tracker.trackPageView({});
     });
   });
+
+  describe("when session is not sampled", () => {
+    beforeEach(() => {
+      global.navigator.sendBeacon = jest.fn().mockImplementation();
+      // @ts-ignore
+      window.XMLHttpRequest = jest.fn().mockImplementation();
+
+      jest.spyOn(cookieUtils, 'getCookie').mockReturnValue('false');
+    });
+
+    describe("using XMLHttpRequest", () => {
+      test("does not send data", () => {
+        tracker.trackPageView({});
+        expect(XMLHttpRequest).not.toHaveBeenCalled();
+      });
+    });
+  })
 });

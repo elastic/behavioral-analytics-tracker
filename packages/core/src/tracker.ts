@@ -46,6 +46,7 @@ export class Tracker {
       session: {
         lifetime: options.session?.lifetime,
       },
+      sampling: options.sampling,
     });
     this.dataProviders = {
       ...DEFAULT_DATA_PROVIDERS,
@@ -55,6 +56,11 @@ export class Tracker {
 
   trackEvent(action: TrackerEventType, event: EventInputProperties) {
     this.userSessionStore.updateSessionExpire();
+    this.userSessionStore.updateSessionSampledExpire();
+
+    if (!this.userSessionStore.isSessionSampled()) {
+      return;
+    }
 
     const userSessionAttributes = this.getUserSession();
 
