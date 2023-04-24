@@ -49,7 +49,7 @@ If sampling is set to 1 (default), all sessions will send events. If sampling is
 
 ```js
 window.elasticAnalytics.createTracker({
-  ...
+  // ... tracker settings
   sampling: 0.3, // 30% of sessions will send events to the server
 });
 ```
