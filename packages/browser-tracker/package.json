@@ -1,6 +1,6 @@
 {
   "name": "@elastic/behavioral-analytics-browser-tracker",
-  "version": "2.0.0-next.0",
+  "version": "2.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
@@ -21,7 +21,7 @@
     "deploy": "cp dist/iife/index.js ../../apps/sandbox/public/behavioral-analytics-browser-tracker.js"
   },
   "devDependencies": {
-    "@elastic/behavioral-analytics-tracker-core": "2.0.0-next.0",
+    "@elastic/behavioral-analytics-tracker-core": "2.0.0",
     "tsconfig": "*",
     "tsup": "^6.3.0"
   },
