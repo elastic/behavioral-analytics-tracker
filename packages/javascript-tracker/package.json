@@ -18,8 +18,10 @@
     "build": "tsup",
     "test": "jest"
   },
+  "dependencies": {
+    "@elastic/behavioral-analytics-tracker-core": "2.0.1"
+  },
   "devDependencies": {
-    "@elastic/behavioral-analytics-tracker-core": "2.0.1",
     "tsconfig": "*",
     "tsup": "^6.3.0",
     "xhr-mock": "^2.5.1"
