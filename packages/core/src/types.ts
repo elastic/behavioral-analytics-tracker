@@ -99,23 +99,21 @@ export interface TrackerOptions {
   sampling?: number;
 }
 
-export interface SearchEventInputProperties {
+interface BaseSearchEventInputProperties {
   search: SearchEventAttribute;
 }
 
-interface BaseSearchEventInputProperties {
-  search: SearchEventAttribute;
-  document?: DocumentAttribute;
-  page?: PageEventAttribute;
-}
+export interface SearchEventInputProperties extends BaseSearchEventInputProperties {}
 
 interface SearchClickEventInputWithDocumentProperties
   extends BaseSearchEventInputProperties {
   document: DocumentAttribute;
+  page?: PageEventAttribute;
 }
 
 interface SearchClickEventInputWithPageProperties
   extends BaseSearchEventInputProperties {
+  document?: DocumentAttribute;
   page: PageEventAttribute;
 }
 

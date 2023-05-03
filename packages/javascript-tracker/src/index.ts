@@ -8,6 +8,15 @@ import {
   TrackerOptions,
 } from "@elastic/behavioral-analytics-tracker-core";
 
+export type {
+  PageViewInputProperties,
+  SearchClickEventInputProperties,
+  SearchEventInputProperties,
+  TrackerEventProperties,
+  TrackerEventType,
+  TrackerOptions
+} from '@elastic/behavioral-analytics-tracker-core';
+
 let sharedTracker: Tracker | null = null;
 
 function getSharedTracker(): Tracker {
