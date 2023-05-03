@@ -1,5 +1,11 @@
 # @elastic/behavioral-analytics-tracker-core
 
+## 2.0.2
+
+### Patch Changes
+
+- 97ea453: v.2.0.2
+
 ## 2.0.1
 
 ### Patch Changes

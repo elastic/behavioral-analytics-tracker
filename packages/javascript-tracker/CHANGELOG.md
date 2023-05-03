@@ -1,5 +1,16 @@
 # @elastic/behavioral-analytics-javascript-tracker
 
+## 2.1.0
+
+### Minor Changes
+
+- 97ea453: v.2.0.2
+
+### Patch Changes
+
+- Updated dependencies [97ea453]
+  - @elastic/behavioral-analytics-tracker-core@2.0.2
+
 ## 2.0.1
 
 ### Patch Changes
