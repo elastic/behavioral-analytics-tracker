@@ -1,5 +1,12 @@
 # @elastic/behavioral-analytics-tracker-core
 
+## 2.0.1
+
+### Patch Changes
+
+- export types
+- d7ea5b2: Export types
+
 ## 2.0.0
 
 ### Major Changes

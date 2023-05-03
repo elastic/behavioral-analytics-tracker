@@ -21,7 +21,7 @@
     "deploy": "cp dist/iife/index.js ../../apps/sandbox/public/behavioral-analytics-browser-tracker.js"
   },
   "devDependencies": {
-    "@elastic/behavioral-analytics-tracker-core": "2.0.0",
+    "@elastic/behavioral-analytics-tracker-core": "2.0.1",
     "tsconfig": "*",
     "tsup": "^6.3.0"
   },
