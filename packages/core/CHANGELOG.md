@@ -1,5 +1,11 @@
 # @elastic/behavioral-analytics-tracker-core
 
+## 2.0.4
+
+### Patch Changes
+
+- 4a4f16c: Publish core
+
 ## 2.0.3
 
 ### Patch Changes
