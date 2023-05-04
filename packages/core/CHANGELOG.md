@@ -1,5 +1,11 @@
 # @elastic/behavioral-analytics-tracker-core
 
+## 2.0.3
+
+### Patch Changes
+
+- Move core from devDep to dep
+
 ## 2.0.2
 
 ### Patch Changes

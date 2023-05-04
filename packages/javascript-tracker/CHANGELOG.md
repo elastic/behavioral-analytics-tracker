@@ -1,5 +1,13 @@
 # @elastic/behavioral-analytics-javascript-tracker
 
+## 2.1.1
+
+### Patch Changes
+
+- Move core from devDep to dep
+- Updated dependencies
+  - @elastic/behavioral-analytics-tracker-core@2.0.3
+
 ## 2.1.0
 
 ### Minor Changes
