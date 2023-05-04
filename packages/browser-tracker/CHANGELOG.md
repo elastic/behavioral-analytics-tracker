@@ -1,5 +1,13 @@
 # @elastic/behavioral-analytics-browser-tracker
 
+## 2.1.3
+
+### Patch Changes
+
+- cb89f61: Include dist folder in core package publish
+- Updated dependencies [cb89f61]
+  - @elastic/behavioral-analytics-tracker-core@2.0.5
+
 ## 2.1.2
 
 ### Patch Changes
