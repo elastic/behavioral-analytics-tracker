@@ -8,9 +8,8 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "dev": "turbo run dev",
-    "add-change": "yarn changeset",
-    "version-packages": "yarn changeset version",
-    "publish-packages": "yarn changeset publish"
+    "lint": "turbo run lint",
+    "publish-packages": "yarn build && yarn lint && yarn test && changeset version && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.25.2",
