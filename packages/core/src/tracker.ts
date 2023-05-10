@@ -32,6 +32,10 @@ export class Tracker {
   private debug: boolean;
 
   constructor(options: TrackerOptions) {
+    if (!options.endpoint || !options.collectionName || !options.apiKey) {
+      throw new Error("Missing one  or more of required options: endpoint, collectionName, apiKey");
+    }
+
     this.apiURL = `${options.endpoint}/_application/analytics/${options.collectionName}/event`;
     this.apiKey = options.apiKey;
     this.debug = options.debug || false;
@@ -63,7 +67,6 @@ export class Tracker {
     }
 
     const userSessionAttributes = this.getUserSession();
-
     const eventData = processEvent(
       action,
       {
@@ -72,16 +75,29 @@ export class Tracker {
       },
       this.dataProviders
     );
-
     const encodedPayload = JSON.stringify(eventData);
-    const queryString = this.debug ? "?debug=true" : "";
-    const eventTrackerURL = `${this.apiURL}/${action}${queryString}`;
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", eventTrackerURL, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.setRequestHeader("Authorization", `Apikey ${this.apiKey}`);
 
-    xhr.send(encodedPayload);
+    fetch(this.getEventTrackerURL(action), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Apikey ${this.apiKey}`
+      },
+      body: encodedPayload
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json();
+      }
+    }).then(body => {
+      const error = body?.error?.caused_by?.reason || body?.error?.reason;
+
+      if (!!error) {
+        throw new Error(error);
+      }
+    }).catch(error => {
+      error.name = 'TrackEventError';
+      console.error(error);
+    });
   }
 
   trackPageView(properties?: PageViewInputProperties) {
@@ -105,5 +121,11 @@ export class Tracker {
         id: this.userSessionStore.getSessionUuid(),
       },
     };
+  }
+
+  private getEventTrackerURL(action: TrackerEventType) {
+    const queryString = this.debug ? "?debug=true" : "";
+
+    return `${this.apiURL}/${action}${queryString}`;
   }
 }
