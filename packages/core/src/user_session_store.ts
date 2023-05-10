@@ -36,10 +36,10 @@ export class UserSessionStore {
     this.sessionTokenExpirationInterval =
       userSessionOptions.session.lifetime ||
       DEFAULT_SESSION_EXPIRATION_INTERVAL;
-    this.sampling = userSessionOptions.sampling === undefined ?  DEFAULT_SAMPLING : userSessionOptions.sampling;
+    this.sampling = userSessionOptions.sampling === undefined ? DEFAULT_SAMPLING : userSessionOptions.sampling;
 
-    if (!getCookie('EA_SESSION_SAMPLED')) {
-      this.updateSessionSampledExpire();
+    if (!getCookie('EA_SESSION_SAMPLED') || (!this.isSessionSampled() && this.sampling === 1)) {
+      this.updateSessionSampledExpire(this.sampling === 1);
     }
 
     if (this.userToken !== getCookie(COOKIE_USER_NAME)) {
@@ -62,8 +62,10 @@ export class UserSessionStore {
     return getCookie(COOKIE_SESSION_SAMPLED_NAME) == 'true';
   }
 
-  updateSessionSampledExpire() {
-    const sampled = getCookie(COOKIE_SESSION_SAMPLED_NAME) || (Math.random() <= this.sampling).toString();
+  updateSessionSampledExpire(ignoreCookie: boolean = false) {
+    const sampled = !ignoreCookie && getCookie(COOKIE_SESSION_SAMPLED_NAME)
+      ? getCookie(COOKIE_SESSION_SAMPLED_NAME)!
+      : (Math.random() <= this.sampling).toString();
 
     const expiresAt = new Date();
     expiresAt.setMilliseconds(DEFAULT_SESSION_SAMPLED_INTERVAL);
