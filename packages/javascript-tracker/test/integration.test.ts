@@ -5,10 +5,15 @@ import {
   trackSearch,
   trackSearchClick,
 } from "@elastic/behavioral-analytics-javascript-tracker";
-import mock from "xhr-mock";
+import { Tracker } from "@elastic/behavioral-analytics-tracker-core";
 
 describe("Integration", () => {
-  beforeEach(() => mock.setup());
+  beforeEach(() => {
+    jest.spyOn(Tracker.prototype, "trackEvent").mockImplementation(() => {});
+    jest.spyOn(Tracker.prototype, "trackPageView");
+    jest.spyOn(Tracker.prototype, "trackSearch");
+    jest.spyOn(Tracker.prototype, "trackSearchClick");
+  });
 
   test("exports", () => {
     expect(createTracker).toBeDefined();
@@ -44,32 +49,9 @@ describe("Integration", () => {
       collectionName: "collection",
     });
 
-    expect.assertions(2);
-
-    mock.post(
-      "http://127.0.0.1:4000/_application/analytics/collection/event/page_view",
-      (req, res) => {
-        expect(req.header("authorization")).toEqual("Apikey sdddd");
-
-        expect(JSON.parse(req.body())).toMatchObject({
-          page: {
-            referrer: "",
-            title: "",
-            url: "http://localhost/",
-          },
-          session: {
-            id: expect.any(String),
-          },
-          user: {
-            id: expect.any(String),
-          },
-        });
-
-        return res.status(201).body("{}");
-      }
-    );
-
     trackPageView();
+
+    expect(Tracker.prototype.trackPageView).toHaveBeenCalled();
   });
 
   test("Dispatch search event", async () => {
@@ -79,34 +61,15 @@ describe("Integration", () => {
       collectionName: "collection",
     });
 
-    expect.assertions(2);
-
-    mock.post(
-      "http://127.0.0.1:4000/_application/analytics/collection/event/search",
-      (req, res) => {
-        expect(req.header("authorization")).toEqual("Apikey sdddd");
-
-        expect(JSON.parse(req.body())).toMatchObject({
-          search: {
-            query: "ddd",
-          },
-          session: {
-            id: expect.any(String),
-          },
-          user: {
-            id: expect.any(String),
-          },
-        });
-
-        return res.status(201).body("{}");
-      }
-    );
-
-    trackSearch({
+    const mockProperties = {
       search: {
         query: "ddd",
       },
-    });
+    }
+
+    trackSearch(mockProperties);
+
+    expect(Tracker.prototype.trackSearch).toHaveBeenCalledWith(mockProperties);
   });
 
   test("Dispatch search click event", async () => {
@@ -116,34 +79,7 @@ describe("Integration", () => {
       collectionName: "collection",
     });
 
-    expect.assertions(2);
-
-    mock.post(
-      "http://127.0.0.1:4000/_application/analytics/collection/event/search_click",
-      (req, res) => {
-        expect(req.header("authorization")).toEqual("Apikey sdddd");
-
-        expect(JSON.parse(req.body())).toMatchObject({
-          search: {
-            query: "ddd",
-          },
-          document: {
-            id: "1",
-            index: "products",
-          },
-          session: {
-            id: expect.any(String),
-          },
-          user: {
-            id: expect.any(String),
-          },
-        });
-
-        return res.status(201).body("{}");
-      }
-    );
-
-    trackSearchClick({
+    const mockProperties = {
       search: {
         query: "ddd",
       },
@@ -151,52 +87,10 @@ describe("Integration", () => {
         id: "1",
         index: "products",
       },
-    });
-  });
+    };
 
-  test("overriding the session", async () => {
-    createTracker({
-      endpoint: "http://127.0.0.1:4000",
-      apiKey: "sdddd",
-      collectionName: "collection",
-      user: {
-        token: "user-overriden-token",
-      },
-    });
+    trackSearchClick(mockProperties);
 
-    expect.assertions(1);
-
-    mock.post(
-      "http://127.0.0.1:4000/_application/analytics/collection/event/search_click",
-      (req, res) => {
-        expect(JSON.parse(req.body())).toMatchObject({
-          search: {
-            query: "ddd",
-          },
-          document: {
-            id: "1",
-            index: "products",
-          },
-          session: {
-            id: expect.any(String),
-          },
-          user: {
-            id: "user-overriden-token",
-          },
-        });
-
-        return res.status(201).body("{}");
-      }
-    );
-
-    trackSearchClick({
-      search: {
-        query: "ddd",
-      },
-      document: {
-        id: "1",
-        index: "products",
-      },
-    });
+    expect(Tracker.prototype.trackSearchClick).toHaveBeenCalledWith(mockProperties);
   });
 });

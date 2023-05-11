@@ -23,8 +23,7 @@
   },
   "devDependencies": {
     "tsconfig": "*",
-    "tsup": "^6.3.0",
-    "xhr-mock": "^2.5.1"
+    "tsup": "^6.3.0"
   },
   "publishConfig": {
     "access": "public"
