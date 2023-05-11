@@ -5,7 +5,6 @@ export default {
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
-  resetMocks: true,
   setupFilesAfterEnv: ["<rootDir>/test/support.ts"],
   transform: {
     // '^.+\\.[tj]sx?$' to process js/ts with `ts-jest`
