@@ -23,5 +23,5 @@ export default defineConfig([
     // NOTE: it means CJS will be .js and ESM will be .mjs
     format: ["cjs"],
     outDir: "dist",
-  }
+  },
 ]);

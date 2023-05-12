@@ -27,9 +27,7 @@ describe("Javascript tracker", () => {
         },
       });
       expect(interception.request.url).to.contain("/event/page_view");
-      expect(interception.request.headers.authorization).to.deep.equal(
-        "Apikey cccc"
-      );
+      expect(interception.request.headers.authorization).to.deep.equal("Apikey cccc");
     });
 
     cy.get(".click-event").click();
@@ -90,6 +88,6 @@ describe("Javascript tracker", () => {
 
     cy.getCookie("EA_SID").should("exist");
     cy.getCookie("EA_UID").should("exist");
-    cy.getCookie("EA_SESSION_SAMPLED").should('have.property', 'value', 'true');
+    cy.getCookie("EA_SESSION_SAMPLED").should("have.property", "value", "true");
   });
 });

@@ -29,16 +29,15 @@ export class UserSessionStore {
   private sampling: number;
 
   constructor(userSessionOptions: UserSessionOptions) {
-    this.userToken =
-      userSessionOptions.user.token || getCookie(COOKIE_USER_NAME) || uuidv4();
+    this.userToken = userSessionOptions.user.token || getCookie(COOKIE_USER_NAME) || uuidv4();
     this.userTokenExpirationInterval =
       userSessionOptions.user.lifetime || DEFAULT_USER_EXPIRATION_INTERVAL;
     this.sessionTokenExpirationInterval =
-      userSessionOptions.session.lifetime ||
-      DEFAULT_SESSION_EXPIRATION_INTERVAL;
-    this.sampling = userSessionOptions.sampling === undefined ? DEFAULT_SAMPLING : userSessionOptions.sampling;
+      userSessionOptions.session.lifetime || DEFAULT_SESSION_EXPIRATION_INTERVAL;
+    this.sampling =
+      userSessionOptions.sampling === undefined ? DEFAULT_SAMPLING : userSessionOptions.sampling;
 
-    if (!getCookie('EA_SESSION_SAMPLED') || (!this.isSessionSampled() && this.sampling === 1)) {
+    if (!getCookie("EA_SESSION_SAMPLED") || (!this.isSessionSampled() && this.sampling === 1)) {
       this.updateSessionSampledExpire(this.sampling === 1);
     }
 
@@ -59,13 +58,14 @@ export class UserSessionStore {
   }
 
   isSessionSampled() {
-    return getCookie(COOKIE_SESSION_SAMPLED_NAME) == 'true';
+    return getCookie(COOKIE_SESSION_SAMPLED_NAME) == "true";
   }
 
   updateSessionSampledExpire(ignoreCookie: boolean = false) {
-    const sampled = !ignoreCookie && getCookie(COOKIE_SESSION_SAMPLED_NAME)
-      ? getCookie(COOKIE_SESSION_SAMPLED_NAME)!
-      : (Math.random() <= this.sampling).toString();
+    const sampled =
+      !ignoreCookie && getCookie(COOKIE_SESSION_SAMPLED_NAME)
+        ? getCookie(COOKIE_SESSION_SAMPLED_NAME)!
+        : (Math.random() <= this.sampling).toString();
 
     const expiresAt = new Date();
     expiresAt.setMilliseconds(DEFAULT_SESSION_SAMPLED_INTERVAL);

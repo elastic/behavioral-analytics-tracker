@@ -54,10 +54,7 @@ export type EventProperties = {
   user?: UserEventAttribute;
 };
 
-export type DataProvider = (
-  eventType: TrackerEventType,
-  event: EventProperties
-) => EventProperties;
+export type DataProvider = (eventType: TrackerEventType, event: EventProperties) => EventProperties;
 
 export type TrackerEventType = "page_view" | "search" | "search_click";
 
@@ -105,14 +102,12 @@ interface BaseSearchEventInputProperties {
 
 export interface SearchEventInputProperties extends BaseSearchEventInputProperties {}
 
-interface SearchClickEventInputWithDocumentProperties
-  extends BaseSearchEventInputProperties {
+interface SearchClickEventInputWithDocumentProperties extends BaseSearchEventInputProperties {
   document: DocumentAttribute;
   page?: PageEventAttribute;
 }
 
-interface SearchClickEventInputWithPageProperties
-  extends BaseSearchEventInputProperties {
+interface SearchClickEventInputWithPageProperties extends BaseSearchEventInputProperties {
   document?: DocumentAttribute;
   page: PageEventAttribute;
 }

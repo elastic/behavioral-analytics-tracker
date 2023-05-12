@@ -42,9 +42,7 @@ export class Tracker {
     this.userSessionStore = new UserSessionStore({
       user: {
         token:
-          typeof options.user?.token === "function"
-            ? options.user.token()
-            : options.user?.token,
+          typeof options.user?.token === "function" ? options.user.token() : options.user?.token,
         lifetime: options.user?.lifetime,
       },
       session: {
@@ -78,26 +76,29 @@ export class Tracker {
     const encodedPayload = JSON.stringify(eventData);
 
     fetch(this.getEventTrackerURL(action), {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Apikey ${this.apiKey}`
+        "Content-Type": "application/json",
+        Authorization: `Apikey ${this.apiKey}`,
       },
-      body: encodedPayload
-    }).then((response) => {
-      if (!response.ok) {
-        return response.json();
-      }
-    }).then(body => {
-      const error = body?.error?.caused_by?.reason || body?.error?.reason;
+      body: encodedPayload,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.json();
+        }
+      })
+      .then((body) => {
+        const error = body?.error?.caused_by?.reason || body?.error?.reason;
 
-      if (!!error) {
-        throw new Error(error);
-      }
-    }).catch(error => {
-      error.name = 'TrackEventError';
-      console.error(error);
-    });
+        if (!!error) {
+          throw new Error(error);
+        }
+      })
+      .catch((error) => {
+        error.name = "TrackEventError";
+        console.error(error);
+      });
   }
 
   trackPageView(properties?: PageViewInputProperties) {

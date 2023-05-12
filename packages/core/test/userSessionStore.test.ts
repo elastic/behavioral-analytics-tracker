@@ -5,9 +5,11 @@ describe("UserSessionStore", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    jest.useFakeTimers().setSystemTime(new Date('1984-01-18'));
+    jest.useFakeTimers().setSystemTime(new Date("1984-01-18"));
     jest.spyOn(cookieUtils, "setCookie").mockReturnValue(undefined);
-    jest.spyOn(cookieUtils, "getCookie").mockImplementation((key) => key === "EA_UID" ? "new-custom-user-token" : undefined);
+    jest
+      .spyOn(cookieUtils, "getCookie")
+      .mockImplementation((key) => (key === "EA_UID" ? "new-custom-user-token" : undefined));
   });
 
   describe("when passed userToken is different than in cookies", () => {
@@ -23,14 +25,18 @@ describe("UserSessionStore", () => {
         },
         session: {},
       });
-      expect(cookieUtils.setCookie).toBeCalledWith("EA_UID", "new-custom-user-token", expect.any(Date));
+      expect(cookieUtils.setCookie).toBeCalledWith(
+        "EA_UID",
+        "new-custom-user-token",
+        expect.any(Date)
+      );
     });
   });
 
   describe("when sampling rate is passed", () => {
     describe("when EA_SESSION_SAMPLED cookie is not present", () => {
       test("sets EA_SESSION_SAMPLED cookie to true when random number is lower than sampling rate", () => {
-        jest.spyOn(global.Math, 'random').mockReturnValue(0.4);
+        jest.spyOn(global.Math, "random").mockReturnValue(0.4);
 
         new UserSessionStore({
           user: {
@@ -40,11 +46,15 @@ describe("UserSessionStore", () => {
           session: {},
           sampling: 0.5,
         });
-        expect(cookieUtils.setCookie).toHaveBeenCalledWith("EA_SESSION_SAMPLED", "true", expect.any(Date));
+        expect(cookieUtils.setCookie).toHaveBeenCalledWith(
+          "EA_SESSION_SAMPLED",
+          "true",
+          expect.any(Date)
+        );
       });
 
       test("sets EA_SESSION_SAMPLED cookie to false when random number is higher than sampling rate", () => {
-        jest.spyOn(global.Math, 'random').mockReturnValue(0.6);
+        jest.spyOn(global.Math, "random").mockReturnValue(0.6);
 
         new UserSessionStore({
           user: {
@@ -54,7 +64,11 @@ describe("UserSessionStore", () => {
           session: {},
           sampling: 0.5,
         });
-        expect(cookieUtils.setCookie).toHaveBeenCalledWith("EA_SESSION_SAMPLED", "false", expect.any(Date));
+        expect(cookieUtils.setCookie).toHaveBeenCalledWith(
+          "EA_SESSION_SAMPLED",
+          "false",
+          expect.any(Date)
+        );
       });
     });
 
@@ -71,7 +85,11 @@ describe("UserSessionStore", () => {
           sampling: 1,
         });
 
-        expect(cookieUtils.setCookie).not.toHaveBeenCalledWith("EA_SESSION_SAMPLED", expect.anything(), expect.any(Date));
+        expect(cookieUtils.setCookie).not.toHaveBeenCalledWith(
+          "EA_SESSION_SAMPLED",
+          expect.anything(),
+          expect.any(Date)
+        );
       });
 
       test("update when EA_SESSION_SAMPLED cookie is false and sampled is 1", () => {
@@ -86,7 +104,11 @@ describe("UserSessionStore", () => {
           sampling: 1,
         });
 
-        expect(cookieUtils.setCookie).toHaveBeenCalledWith("EA_SESSION_SAMPLED", "true", expect.any(Date));
+        expect(cookieUtils.setCookie).toHaveBeenCalledWith(
+          "EA_SESSION_SAMPLED",
+          "true",
+          expect.any(Date)
+        );
       });
     });
   });
@@ -101,7 +123,11 @@ describe("UserSessionStore", () => {
         session: {},
       });
 
-      expect(cookieUtils.setCookie).toHaveBeenCalledWith("EA_SESSION_SAMPLED", "true", expect.any(Date));
+      expect(cookieUtils.setCookie).toHaveBeenCalledWith(
+        "EA_SESSION_SAMPLED",
+        "true",
+        expect.any(Date)
+      );
     });
   });
 
@@ -142,7 +168,11 @@ describe("UserSessionStore", () => {
 
         userSessionStore.getUserUuid();
 
-        expect(cookieUtils.setCookie).toHaveBeenCalledWith("EA_UID", "custom-user-token", expirationDate);
+        expect(cookieUtils.setCookie).toHaveBeenCalledWith(
+          "EA_UID",
+          "custom-user-token",
+          expirationDate
+        );
       });
     });
   });
@@ -171,7 +201,11 @@ describe("UserSessionStore", () => {
 
       userSessionStore.updateSessionExpire();
 
-      expect(cookieUtils.setCookie).toHaveBeenCalledWith("EA_SID", expect.any(String), expirationDate);
+      expect(cookieUtils.setCookie).toHaveBeenCalledWith(
+        "EA_SID",
+        expect.any(String),
+        expirationDate
+      );
     });
   });
 
@@ -194,7 +228,7 @@ describe("UserSessionStore", () => {
     });
 
     test("when EA_SESSION_SAMPELD cookie is not present returns session sampling param from cookies", () => {
-      jest.spyOn(cookieUtils, "getCookie").mockReturnValue('');
+      jest.spyOn(cookieUtils, "getCookie").mockReturnValue("");
       expect(userSessionStore.isSessionSampled()).toEqual(false);
     });
 
@@ -205,7 +239,11 @@ describe("UserSessionStore", () => {
 
       userSessionStore.updateSessionSampledExpire();
 
-      expect(cookieUtils.setCookie).toHaveBeenCalledWith("EA_SESSION_SAMPLED", "true", expirationDate);
+      expect(cookieUtils.setCookie).toHaveBeenCalledWith(
+        "EA_SESSION_SAMPLED",
+        "true",
+        expirationDate
+      );
     });
   });
 });

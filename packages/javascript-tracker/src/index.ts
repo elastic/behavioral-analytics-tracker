@@ -14,8 +14,8 @@ export type {
   SearchEventInputProperties,
   TrackerEventProperties,
   TrackerEventType,
-  TrackerOptions
-} from '@elastic/behavioral-analytics-tracker-core';
+  TrackerOptions,
+} from "@elastic/behavioral-analytics-tracker-core";
 
 let sharedTracker: Tracker | null = null;
 
@@ -36,10 +36,7 @@ export function getTracker() {
   return getSharedTracker();
 }
 
-export function trackEvent(
-  eventType: TrackerEventType,
-  properties: TrackerEventProperties
-) {
+export function trackEvent(eventType: TrackerEventType, properties: TrackerEventProperties) {
   return getSharedTracker()?.trackEvent(eventType, properties);
 }
 
