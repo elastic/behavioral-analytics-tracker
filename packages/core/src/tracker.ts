@@ -33,7 +33,7 @@ export class Tracker {
 
   constructor(options: TrackerOptions) {
     if (!options.endpoint || !options.collectionName || !options.apiKey) {
-      throw new Error("Missing one  or more of required options: endpoint, collectionName, apiKey");
+      throw new Error("Missing one or more of required options: endpoint, collectionName, apiKey");
     }
 
     this.apiURL = `${options.endpoint}/_application/analytics/${options.collectionName}/event`;
