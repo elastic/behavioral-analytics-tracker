@@ -56,7 +56,7 @@ describe("Tracker", () => {
         new Tracker(options);
       } catch (e: unknown) {
         expect((e as Error).message).toEqual(
-          "Missing one  or more of required options: endpoint, collectionName, apiKey"
+          "Missing one or more of required options: endpoint, collectionName, apiKey"
         );
       }
     });
