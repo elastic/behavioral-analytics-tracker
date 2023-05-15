@@ -17,15 +17,12 @@ describe("getCookie", () => {
       });
     });
 
-    describe.each(["bar=val", "bar=val1; baz=val2"])(
-      "docuent.cookie is %s",
-      (cookies) => {
-        it("returns undefined", () => {
-          setDocumentCookies(cookies);
-          expect(getCookie("foo")).toBeUndefined();
-        });
-      }
-    );
+    describe.each(["bar=val", "bar=val1; baz=val2"])("docuent.cookie is %s", (cookies) => {
+      it("returns undefined", () => {
+        setDocumentCookies(cookies);
+        expect(getCookie("foo")).toBeUndefined();
+      });
+    });
   });
 
   describe("when the cookie is set", () => {

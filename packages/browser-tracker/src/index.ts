@@ -1,7 +1,4 @@
-import {
-  PageViewInputProperties,
-  Tracker,
-} from "@elastic/behavioral-analytics-tracker-core";
+import { PageViewInputProperties, Tracker } from "@elastic/behavioral-analytics-tracker-core";
 import type {
   TrackerEventType,
   EventInputProperties,

@@ -70,6 +70,7 @@ createTracker({
 ```
 
 ### Introducing sampling
+
 You don't always want all sessions to be sent to your Elastic cluster. You can introduce session-based sampling by adding `sampling` parameter to the `createTracker` method.
 
 If sampling is set to 1 (default), all sessions will send events. If sampling is set to 0, no sessions will send events.
@@ -80,7 +81,6 @@ createTracker({
   sampling: 0.3, // 30% of sessions will send events to the server
 });
 ```
-
 
 ### Integration with Search UI (TODO)
 

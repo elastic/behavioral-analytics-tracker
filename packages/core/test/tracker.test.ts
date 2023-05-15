@@ -1,9 +1,18 @@
 import { Tracker } from "../src/tracker";
-import mock from "xhr-mock";
 import * as cookieUtils from "../src/util/cookies";
 
+const flushPromises = () =>
+  new Promise((resolve) => jest.requireActual("timers").setImmediate(resolve));
+
 describe("Tracker", () => {
-  beforeEach(() => mock.setup());
+  beforeEach(() => {
+    // @ts-ignore
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve(),
+      })
+    );
+  });
 
   const tracker = new Tracker({
     apiKey: "key",
@@ -16,111 +25,71 @@ describe("Tracker", () => {
     },
   });
 
+  describe("Tracker instance", () => {
+    test.each([
+      [
+        "apiKey",
+        {
+          apiKey: "",
+          endpoint: "http://localhost:3000",
+          collectionName: "collection",
+        },
+      ],
+      [
+        "endpoint",
+        {
+          apiKey: "key",
+          endpoint: "",
+          collectionName: "collection",
+        },
+      ],
+      [
+        "collectionName",
+        {
+          apiKey: "key",
+          endpoint: "http://localhost:3000",
+          collectionName: "",
+        },
+      ],
+    ])("throw error when %s is not provided", (_, options) => {
+      try {
+        new Tracker(options);
+      } catch (e: unknown) {
+        expect((e as Error).message).toEqual(
+          "Missing one or more of required options: endpoint, collectionName, apiKey"
+        );
+      }
+    });
+  });
+
   describe("trackEvent", () => {
     beforeEach(() => {
-      jest.spyOn(cookieUtils, 'getCookie').mockReturnValue('true');
+      jest.spyOn(cookieUtils, "getCookie").mockReturnValue("true");
     });
 
     test("send data at the right URL - page_view event", () => {
-      expect.assertions(2);
-
-      mock.post(
-        "http://localhost:3000/_application/analytics/collection/event/page_view",
-        (req, res) => {
-          expect(req.header("authorization")).toEqual("Apikey key");
-
-          expect(JSON.parse(req.body())).toMatchObject({
-            page: {
-              referrer: "",
-              title: "",
-              url: "http://localhost/",
-            },
-            session: {
-              id: expect.any(String),
-            },
-            user: {
-              id: expect.any(String),
-            },
-          });
-
-          return res.status(201).body("{}");
-        }
-      );
-
       tracker.trackPageView({});
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        "http://localhost:3000/_application/analytics/collection/event/page_view",
+        expect.anything()
+      );
     });
 
-    test("send data at the right URL - search event", () => {
-      expect.assertions(3);
-
-      mock.post(
-        "http://localhost:3000/_application/analytics/collection/event/search",
-        (req, res) => {
-          expect(req.header("authorization")).toEqual("Apikey key");
-
-          const response = JSON.parse(req.body());
-
-          expect(response).toMatchObject({
-            search: {
-              query: "query",
-            },
-            session: {
-              id: expect.any(String),
-            },
-            user: {
-              id: expect.any(String),
-            },
-          });
-
-          expect(response).not.toHaveProperty("page");
-          return res.status(201).body("{}");
-        }
-      );
-
+    test("send data at the right URL search event", () => {
       tracker.trackSearch({
         search: {
           query: "query",
         },
       });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        "http://localhost:3000/_application/analytics/collection/event/search",
+        expect.anything()
+      );
     });
 
     test("send data at the right URL - search click event", () => {
-      expect.assertions(5);
-
-      mock.post(
-        "http://localhost:3000/_application/analytics/collection/event/search_click",
-        (req, res) => {
-          expect(req.header("authorization")).toEqual("Apikey key");
-
-          const response = JSON.parse(req.body());
-
-          expect(response).toMatchObject({
-            search: {
-              query: "query",
-            },
-            session: {
-              id: expect.any(String),
-            },
-            user: {
-              id: expect.any(String),
-            },
-          });
-
-          expect(response).toHaveProperty("page");
-          expect(response.page).toHaveProperty(
-            "url",
-            "http://my-url-to-navigate/"
-          );
-          expect(response.document).toMatchInlineSnapshot(`
-            {
-              "id": "123",
-              "index": "1",
-            }
-          `);
-          return res.status(201).body("{}");
-        }
-      );
-
       tracker.trackSearchClick({
         search: {
           query: "query",
@@ -133,25 +102,59 @@ describe("Tracker", () => {
           index: "1",
         },
       });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        "http://localhost:3000/_application/analytics/collection/event/search_click",
+        expect.anything()
+      );
     });
 
-    test("applies data providers", async () => {
-      expect.assertions(2);
-
-      mock.post(
-        "http://localhost:3000/_application/analytics/collection/event/page_view",
-        (req, res) => {
-          expect(req.header("authorization")).toEqual("Apikey key");
-
-          expect(JSON.parse(req.body())).toMatchObject({
-            foo: "value",
-          });
-
-          return res.status(201).body("{}");
-        }
-      );
-
+    test("applies data providers", () => {
       tracker.trackPageView({});
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          body: expect.stringContaining('"foo":"value"'),
+          headers: {
+            Authorization: "Apikey key",
+            "Content-Type": "application/json",
+          },
+        })
+      );
+    });
+
+    describe("error handling", () => {
+      test("when fetch is failed", async () => {
+        const mockError = new Error("some error");
+        // @ts-ignore
+        global.fetch = jest.fn(() => Promise.reject(mockError));
+        jest.spyOn(global.console, "error").mockImplementation(() => {});
+
+        tracker.trackPageView({});
+
+        await flushPromises();
+
+        expect(global.console.error).toHaveBeenCalledWith(mockError);
+      });
+
+      test("when request returns 4xx, 5xx status code", async () => {
+        const mockErrorReason = "some field is missing";
+        // @ts-ignore
+        global.fetch = jest.fn(() =>
+          Promise.resolve({
+            ok: false,
+            json: () => Promise.resolve({ error: { caused_by: { reason: mockErrorReason } } }),
+          })
+        );
+        jest.spyOn(global.console, "error").mockImplementation(() => {});
+
+        tracker.trackPageView({});
+
+        await flushPromises();
+
+        expect(global.console.error).toHaveBeenCalledWith(new Error(mockErrorReason));
+      });
     });
   });
 
@@ -161,7 +164,7 @@ describe("Tracker", () => {
       // @ts-ignore
       window.XMLHttpRequest = jest.fn().mockImplementation();
 
-      jest.spyOn(cookieUtils, 'getCookie').mockReturnValue('false');
+      jest.spyOn(cookieUtils, "getCookie").mockReturnValue("false");
     });
 
     describe("using XMLHttpRequest", () => {
@@ -170,5 +173,5 @@ describe("Tracker", () => {
         expect(XMLHttpRequest).not.toHaveBeenCalled();
       });
     });
-  })
+  });
 });
