@@ -6,11 +6,11 @@ const flushPromises = () =>
 
 describe("Tracker", () => {
   beforeEach(() => {
-    // @ts-ignore
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        json: () => Promise.resolve(),
-      })
+    global.fetch = jest.fn(
+      () =>
+        Promise.resolve({
+          json: () => Promise.resolve(),
+        }) as Promise<Response>
     );
   });
 
@@ -127,7 +127,7 @@ describe("Tracker", () => {
     describe("error handling", () => {
       test("when fetch is failed", async () => {
         const mockError = new Error("some error");
-        // @ts-ignore
+
         global.fetch = jest.fn(() => Promise.reject(mockError));
         jest.spyOn(global.console, "error").mockImplementation(() => {});
 
@@ -140,13 +140,13 @@ describe("Tracker", () => {
 
       test("when request returns 4xx, 5xx status code", async () => {
         const mockErrorReason = "some field is missing";
-        // @ts-ignore
+
         global.fetch = jest.fn(() =>
           Promise.resolve({
             ok: false,
             json: () => Promise.resolve({ error: { caused_by: { reason: mockErrorReason } } }),
           })
-        );
+        ) as jest.Mock<Promise<Response>>;
         jest.spyOn(global.console, "error").mockImplementation(() => {});
 
         tracker.trackPageView({});
