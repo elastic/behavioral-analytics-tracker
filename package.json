@@ -9,6 +9,7 @@
     "test": "turbo run test",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "format": "prettier --write .",
     "publish-packages": "yarn build && yarn lint && yarn test && changeset version && changeset publish"
   },
   "devDependencies": {
