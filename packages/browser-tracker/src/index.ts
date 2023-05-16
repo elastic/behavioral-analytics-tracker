@@ -8,7 +8,7 @@ import type {
 } from "@elastic/behavioral-analytics-tracker-core";
 
 let tracker: Tracker | undefined;
-let pendingTrackerEvents: Array<[TrackerEventType, EventInputProperties]> = [];
+const pendingTrackerEvents: Array<[TrackerEventType, EventInputProperties]> = [];
 
 export interface BrowserTracker {
   createTracker: (options: TrackerOptions) => Tracker;

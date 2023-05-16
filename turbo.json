@@ -4,13 +4,13 @@
     "build": {
       "dependsOn": ["^build"]
     },
-    "lint": {
-      "outputs": []
-    },
     "test": {
       "dependsOn": ["build"],
       "outputs": [],
       "inputs": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "lint": {
+      "outputs": []
     }
   }
 }
