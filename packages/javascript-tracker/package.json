@@ -1,6 +1,6 @@
 {
   "name": "@elastic/behavioral-analytics-javascript-tracker",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "main": "./dist/index.js",
   "sideEffects": false,
   "types": "./dist/index.d.ts",
@@ -20,7 +20,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@elastic/behavioral-analytics-tracker-core": "2.0.5"
+    "@elastic/behavioral-analytics-tracker-core": "2.0.6"
   },
   "devDependencies": {
     "eslint-config-custom": "*",

@@ -1,5 +1,11 @@
 # @elastic/behavioral-analytics-tracker-core
 
+## 2.0.6
+
+### Patch Changes
+
+- Fix cookies issues
+
 ## 2.0.5
 
 ### Patch Changes

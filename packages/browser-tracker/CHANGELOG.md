@@ -1,5 +1,13 @@
 # @elastic/behavioral-analytics-browser-tracker
 
+## 2.1.4
+
+### Patch Changes
+
+- Fix cookies issues
+- Updated dependencies
+  - @elastic/behavioral-analytics-tracker-core@2.0.6
+
 ## 2.1.3
 
 ### Patch Changes
