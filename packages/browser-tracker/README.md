@@ -9,7 +9,11 @@ Once you have integrated the tracker into your site, you can access the instance
 You must call the `createTracker` method before you can use the tracker.
 
 ```js
-window.elasticAnalytics.createTracker();
+window.elasticAnalytics.createTracker({
+  endpoint: "https://my-analytics-dsn.elastic.co",
+  collectionName: "website",
+  apiKey: "<api-key>",
+});
 ```
 
 ## Token Fingerprints
@@ -23,12 +27,30 @@ These fingerprints are used to identify the user across sessions.
 
 ### Changing the User Token and time length
 
-You can change the User Token and time length by passing in the `userToken` and `userTokenTimeLength` parameters to the `createTracker` method.
+You can change the User Token and time length by passing in the `token` and `lifetime` parameters to the `createTracker` method.
 
 ```js
 window.elasticAnalytics.createTracker({
-  userToken: () => "my-user-token",
-  userTokenExpirationDate: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+  user: {
+    token: () => "my-user-token",
+    lifetime: 24 * 60 * 60 * 1000, // 24 hours
+  },
+  session: {
+    lifetime: 30 * 60 * 1000, // 30 minutes
+  },
+});
+```
+
+### Introducing sampling
+
+You don't always want all sessions to be sent to your Elastic cluster. You can introduce session-based sampling by adding `sampling` parameter to the `createTracker` method.
+
+If sampling is set to 1 (default), all sessions will send events. If sampling is set to 0, no sessions will send events.
+
+```js
+window.elasticAnalytics.createTracker({
+  // ... tracker settings
+  sampling: 0.3, // 30% of sessions will send events to the server
 });
 ```
 
@@ -46,7 +68,16 @@ createTracker(((options: TrackerOptions) = {}));
 
 ```javascript
 window.elasticAnalytics.createTracker({
-  dsn: "https://my-analytics-dsn.elastic.co",
+  endpoint: "https://my-analytics-dsn.elastic.co",
+  collectionName: "website",
+  apiKey: "<api-key>",
+  user: {
+    token: () => "my-user-token",
+    lifetime: 24 * 60 * 60 * 1000, // 24 hours
+  },
+  session: {
+    lifetime: 30 * 60 * 1000, // 30 minutes
+  },
 });
 ```
 
@@ -56,58 +87,110 @@ window.elasticAnalytics.createTracker({
 | ------- | -------------- | ---------------------------- |
 | options | TrackerOptions | The options for the tracker. |
 
-### trackEvent
+### Dispatch Search Events
 
-Tracks an event.
+These events are used to track the user's search behavior. You can dispatch these events by calling the `trackSearch` method.
 
-```ts
-trackEvent(
-  eventType: TrackerEventType,
-  properties: TrackerEventProperties = {}
-)
+Below is an example of how you can dispatch a search event when a user searches for a query, for a hypothetical search API.
+
+```typescript
+import { trackSearch } from "@elastic/behavioral-analytics-javascript-tracker";
+
+const getSearchResults = async (query: string) => {
+  const results = await api.getSearchResults(query);
+  trackSearch({
+    search: {
+      query: query,
+      results: {
+        // optional
+        items: [],
+        total_results: results.totalResults,
+      },
+    },
+  });
+};
 ```
 
-#### Example
+A full list of properties that can be passed to the `trackSearch` method below:
 
 ```javascript
-window.elasticAnalytics.trackEvent("click", {
-  category: "product",
-  action: "add_to_cart",
-  label: "product_id",
-  value: "123",
+window.elasticAnalytics.trackSearch({
+  search: {
+    query: "laptop",
+    filters: [
+      // optional
+      { field: "brand", value: ["apple"] },
+    ],
+    page: {
+      //optional
+      current: 1,
+      size: 10,
+    },
+    results: {
+      // optional
+      items: [
+        {
+          document: {
+            id: "123",
+            index: "products",
+          },
+          page: {
+            url: "http://my-website.com/products/123",
+          },
+        },
+      ],
+      total_results: 100,
+    },
+    sort: {
+      name: "relevance",
+    },
+    search_application: "website",
+  },
 });
 ```
 
-#### Parameters
+### Dispatch Search Click Events
 
-| Name       | Type                   | Description                  |
-| ---------- | ---------------------- | ---------------------------- |
-| eventType  | TrackerEventType       | The type of event to track.  |
-| properties | TrackerEventProperties | The properties of the event. |
+These events are used to track the user's search click behavior. Think of these events to track what the user is clicking on after they have performed a search. You can dispatch these events by calling the `trackSearchClick` method.
 
-### trackPageView
+Below is an example of how you can dispatch a search click event when a user clicks on a search result, for a hypothetical search API.
 
-Tracks a page view.
-
-```ts
-trackPageView(
-  properties: TrackerEventProperties = {}
-)
-```
-
-#### Example
-
-```javascript
-window.elasticAnalytics.trackPageView({
-  title: "Home Page",
+```typescript
+window.elasticAnalytics.trackSearchClick({
+  // document that they clicked on
+  document: { id: "123", index: "products" },
+  // the query and results that they used to find this document
+  search: {
+    query: "laptop",
+    filters: [
+      { field: "brand", value: ["apple"] },
+      { field: "price", value: ["1000-2000"] },
+    ],
+    page: {
+      current: 1,
+      size: 10,
+    },
+    results: {
+      items: [
+        {
+          document: {
+            id: "123",
+            index: "products",
+          },
+          page: {
+            url: "http://my-website.com/products/123",
+          },
+        },
+      ],
+      total_results: 100,
+    },
+    sort: {
+      name: "relevance",
+    },
+    search_application: "website",
+  },
 });
 ```
-
-#### Parameters
-
-| Name       | Type                   | Description                  |
-| ---------- | ---------------------- | ---------------------------- |
-| properties | TrackerEventProperties | The properties of the event. |
 
 ## Types
 

@@ -1,5 +1,17 @@
 import {
+  PageViewInputProperties,
+  SearchClickEventInputProperties,
+  SearchEventInputProperties,
   Tracker,
+  TrackerEventProperties,
+  TrackerEventType,
+  TrackerOptions,
+} from "@elastic/behavioral-analytics-tracker-core";
+
+export type {
+  PageViewInputProperties,
+  SearchClickEventInputProperties,
+  SearchEventInputProperties,
   TrackerEventProperties,
   TrackerEventType,
   TrackerOptions,
@@ -24,13 +36,18 @@ export function getTracker() {
   return getSharedTracker();
 }
 
-export function trackEvent(
-  eventType: TrackerEventType,
-  properties: TrackerEventProperties
-) {
+export function trackEvent(eventType: TrackerEventType, properties: TrackerEventProperties) {
   return getSharedTracker()?.trackEvent(eventType, properties);
 }
 
-export function trackPageView(properties?: TrackerEventProperties) {
+export function trackPageView(properties?: PageViewInputProperties) {
   return getSharedTracker()?.trackPageView(properties);
+}
+
+export function trackSearch(properties: SearchEventInputProperties) {
+  return getSharedTracker()?.trackSearch(properties);
+}
+
+export function trackSearchClick(properties: SearchClickEventInputProperties) {
+  return getSharedTracker()?.trackSearchClick(properties);
 }

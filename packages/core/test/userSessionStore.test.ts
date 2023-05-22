@@ -1,56 +1,163 @@
-import { UserSessionStore } from "../src/userSessionStore";
-import { getCookie, getCookieExpirationDate } from "./support"
+import { UserSessionStore } from "../src/user_session_store";
+import * as cookieUtils from "../src/util/cookies";
 
 describe("UserSessionStore", () => {
-  beforeAll(() => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    jest.useFakeTimers().setSystemTime(new Date("1984-01-18"));
+    jest.spyOn(cookieUtils, "setCookie").mockReturnValue(undefined);
     jest
-      .useFakeTimers()
-      .setSystemTime(new Date('1984-01-18'));
+      .spyOn(cookieUtils, "getCookie")
+      .mockImplementation((key) => (key === "EA_UID" ? "new-custom-user-token" : undefined));
   });
 
   describe("when passed userToken is different than in cookies", () => {
     beforeEach(() => {
-      Object.defineProperty(window.document, 'cookie', {
-        writable: true,
-        value: 'EA_UID=generic-user-token; expires=Wed, 18 Jan 1984 00:00:10 GMT; path=/',
-      });
+      jest.spyOn(cookieUtils, "getCookie").mockReturnValue("generic-user-token");
     });
 
     test("updates token in cookies with the user's one", () => {
       new UserSessionStore({
-        userToken: "new-custom-user-token",
-        userTokenExpirationInterval: 10000,
+        user: {
+          token: "new-custom-user-token",
+          lifetime: 10000,
+        },
+        session: {},
       });
-
-      expect(getCookie("EA_UID")).toEqual("new-custom-user-token");
+      expect(cookieUtils.setCookie).toBeCalledWith(
+        "EA_UID",
+        "new-custom-user-token",
+        expect.any(Date)
+      );
     });
   });
 
-  const userSessionStore = new UserSessionStore({
-    userToken: "custom-user-token",
-    userTokenExpirationInterval: 10000,
+  describe("when sampling rate is passed", () => {
+    describe("when EA_SESSION_SAMPLED cookie is not present", () => {
+      test("sets EA_SESSION_SAMPLED cookie to true when random number is lower than sampling rate", () => {
+        jest.spyOn(global.Math, "random").mockReturnValue(0.4);
+
+        new UserSessionStore({
+          user: {
+            token: "new-custom-user-token",
+            lifetime: 10000,
+          },
+          session: {},
+          sampling: 0.5,
+        });
+        expect(cookieUtils.setCookie).toHaveBeenCalledWith(
+          "EA_SESSION_SAMPLED",
+          "true",
+          expect.any(Date)
+        );
+      });
+
+      test("sets EA_SESSION_SAMPLED cookie to false when random number is higher than sampling rate", () => {
+        jest.spyOn(global.Math, "random").mockReturnValue(0.6);
+
+        new UserSessionStore({
+          user: {
+            token: "new-custom-user-token",
+            lifetime: 10000,
+          },
+          session: {},
+          sampling: 0.5,
+        });
+        expect(cookieUtils.setCookie).toHaveBeenCalledWith(
+          "EA_SESSION_SAMPLED",
+          "false",
+          expect.any(Date)
+        );
+      });
+    });
+
+    describe("when EA_SESSION_SAMPLED cookie is present", () => {
+      test("does not update EA_SESSION_SAMPLED cookie", () => {
+        jest.spyOn(cookieUtils, "getCookie").mockReturnValue("true");
+
+        new UserSessionStore({
+          user: {
+            token: "new-custom-user-token",
+            lifetime: 10000,
+          },
+          session: {},
+          sampling: 1,
+        });
+
+        expect(cookieUtils.setCookie).not.toHaveBeenCalledWith(
+          "EA_SESSION_SAMPLED",
+          expect.anything(),
+          expect.any(Date)
+        );
+      });
+
+      test("update when EA_SESSION_SAMPLED cookie is false and sampled is 1", () => {
+        jest.spyOn(cookieUtils, "getCookie").mockReturnValue("false");
+
+        new UserSessionStore({
+          user: {
+            token: "new-custom-user-token",
+            lifetime: 10000,
+          },
+          session: {},
+          sampling: 1,
+        });
+
+        expect(cookieUtils.setCookie).toHaveBeenCalledWith(
+          "EA_SESSION_SAMPLED",
+          "true",
+          expect.any(Date)
+        );
+      });
+    });
+  });
+
+  describe("when sampling rate is not passed", () => {
+    test("sets EA_SESSION_SAMPLED cookie default to true", () => {
+      new UserSessionStore({
+        user: {
+          token: "new-custom-user-token",
+          lifetime: 10000,
+        },
+        session: {},
+      });
+
+      expect(cookieUtils.setCookie).toHaveBeenCalledWith(
+        "EA_SESSION_SAMPLED",
+        "true",
+        expect.any(Date)
+      );
+    });
   });
 
   describe("getUserUuid", () => {
-    describe("when EA_UID cookie is present", () => {
-      beforeAll(() => {
-        Object.defineProperty(window.document, 'cookie', {
-          writable: true,
-          value: 'EA_UID=custom-user-token; expires=Wed, 18 Jan 1984 00:00:10 GMT; path=/',
-        });
+    let userSessionStore: UserSessionStore;
+
+    beforeEach(() => {
+      userSessionStore = new UserSessionStore({
+        user: {
+          token: "custom-user-token",
+          lifetime: 10000,
+        },
+        session: {},
       });
-      
+    });
+
+    describe("when EA_UID cookie is present", () => {
+      beforeEach(() => {
+        jest.spyOn(cookieUtils, "getCookie").mockReturnValue("custom-user-token");
+      });
+
       test("returns the same EA_UID", () => {
-        expect(userSessionStore.getUserUuid()).toEqual("custom-user-token")
+        expect(userSessionStore.getUserUuid()).toEqual("custom-user-token");
       });
 
       test("doesn't update expirationDate", () => {
-        const expirationDate = new Date();
-        expirationDate.setMilliseconds(10000);
+        jest.clearAllMocks();
 
         userSessionStore.getUserUuid();
-
-        expect(getCookieExpirationDate("EA_UID")).toEqual(expirationDate.toUTCString())
+        expect(cookieUtils.setCookie).not.toHaveBeenCalled();
       });
     });
 
@@ -60,36 +167,83 @@ describe("UserSessionStore", () => {
         expirationDate.setMilliseconds(10000);
 
         userSessionStore.getUserUuid();
-  
-        expect(getCookie("EA_UID")).toEqual("custom-user-token");
-        expect(getCookieExpirationDate("EA_UID")).toEqual(expirationDate.toUTCString())
+
+        expect(cookieUtils.setCookie).toHaveBeenCalledWith(
+          "EA_UID",
+          "custom-user-token",
+          expirationDate
+        );
       });
     });
   });
 
   describe("getSessionUuid", () => {
-    describe("when EA_SID cookie is present", () => {
-      beforeEach(() => {
-        Object.defineProperty(window.document, 'cookie', {
-          writable: true,
-          value: 'EA_SID=custom-user-token; expires=Wed, 17 Jan 1984 23:59:00 GMT; path=/',
-        });
-      });
+    let userSessionStore: UserSessionStore;
 
-      test("returns session uuid from cookies", () => {
-        expect(userSessionStore.getSessionUuid()).toEqual('custom-user-token');
+    beforeEach(() => {
+      userSessionStore = new UserSessionStore({
+        user: {
+          token: "custom-user-token",
+          lifetime: 10000,
+        },
+        session: {},
       });
     });
 
-    describe("updateSessionExpire", () => {
-      test("updates expiration date for cookie", () => {
-        const expirationDate = new Date();
-        expirationDate.setMilliseconds(30 * 60 * 1000);
+    test("when EA_SID cookie is present returns session uuid from cookies", () => {
+      jest.spyOn(cookieUtils, "getCookie").mockReturnValue("custom-user-token");
+      expect(userSessionStore.getSessionUuid()).toEqual("custom-user-token");
+    });
 
-        userSessionStore.updateSessionExpire();
+    test("updates expiration date for cookie", () => {
+      const expirationDate = new Date();
+      expirationDate.setMilliseconds(30 * 60 * 1000);
 
-        expect(getCookieExpirationDate("EA_SID")).toEqual(expirationDate.toUTCString())
+      userSessionStore.updateSessionExpire();
+
+      expect(cookieUtils.setCookie).toHaveBeenCalledWith(
+        "EA_SID",
+        expect.any(String),
+        expirationDate
+      );
+    });
+  });
+
+  describe("EA_SESSION_SAMPELD", () => {
+    let userSessionStore: UserSessionStore;
+
+    beforeEach(() => {
+      userSessionStore = new UserSessionStore({
+        user: {
+          token: "custom-user-token",
+          lifetime: 10000,
+        },
+        session: {},
       });
+    });
+
+    test("when EA_SESSION_SAMPELD cookie is present returns session sampling param from cookies", () => {
+      jest.spyOn(cookieUtils, "getCookie").mockReturnValue("true");
+      expect(userSessionStore.isSessionSampled()).toEqual(true);
+    });
+
+    test("when EA_SESSION_SAMPELD cookie is not present returns session sampling param from cookies", () => {
+      jest.spyOn(cookieUtils, "getCookie").mockReturnValue("");
+      expect(userSessionStore.isSessionSampled()).toEqual(false);
+    });
+
+    test("updates expiration date for cookie", () => {
+      jest.spyOn(cookieUtils, "getCookie").mockReturnValue("true");
+      const expirationDate = new Date();
+      expirationDate.setMilliseconds(30 * 60 * 1000);
+
+      userSessionStore.updateSessionSampledExpire();
+
+      expect(cookieUtils.setCookie).toHaveBeenCalledWith(
+        "EA_SESSION_SAMPLED",
+        "true",
+        expirationDate
+      );
     });
   });
 });

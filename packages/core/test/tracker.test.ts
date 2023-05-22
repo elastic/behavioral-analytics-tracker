@@ -1,136 +1,176 @@
 import { Tracker } from "../src/tracker";
+import * as cookieUtils from "../src/util/cookies";
+
+const flushPromises = () =>
+  new Promise((resolve) => jest.requireActual("timers").setImmediate(resolve));
 
 describe("Tracker", () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(
+      () =>
+        Promise.resolve({
+          json: () => Promise.resolve(),
+        }) as Promise<Response>
+    );
+  });
+
   const tracker = new Tracker({
-    dsn: "http://localhost/collection",
+    apiKey: "key",
+    endpoint: "http://localhost:3000",
+    collectionName: "collection",
     dataProviders: {
-      eventType: (eventType: any, payload: any) => {
-        return { ...payload, eventType };
-      },
-      foo: (_: any, payload: any) => {
-        return { ...payload, foo: "value" };
+      foo: (_, properties) => {
+        return { ...properties, foo: "value" };
       },
     },
   });
 
+  describe("Tracker instance", () => {
+    test.each([
+      [
+        "apiKey",
+        {
+          apiKey: "",
+          endpoint: "http://localhost:3000",
+          collectionName: "collection",
+        },
+      ],
+      [
+        "endpoint",
+        {
+          apiKey: "key",
+          endpoint: "",
+          collectionName: "collection",
+        },
+      ],
+      [
+        "collectionName",
+        {
+          apiKey: "key",
+          endpoint: "http://localhost:3000",
+          collectionName: "",
+        },
+      ],
+    ])("throw error when %s is not provided", (_, options) => {
+      try {
+        new Tracker(options);
+      } catch (e: unknown) {
+        expect((e as Error).message).toEqual(
+          "Missing one or more of required options: endpoint, collectionName, apiKey"
+        );
+      }
+    });
+  });
+
   describe("trackEvent", () => {
-    describe("using sendBeacon", () => {
-      beforeAll(() => (navigator.sendBeacon = jest.fn().mockImplementation()));
+    beforeEach(() => {
+      jest.spyOn(cookieUtils, "getCookie").mockReturnValue("true");
+    });
 
-      test("send data at the right URL", () => {
-        tracker.trackEvent("pageview");
-        const [eventURL] = (navigator.sendBeacon as jest.Mock).mock.lastCall;
-        expect(eventURL).toEqual("http://localhost/collection/events");
+    test("send data at the right URL - page_view event", () => {
+      tracker.trackPageView({});
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        "http://localhost:3000/_application/analytics/collection/event/page_view",
+        expect.anything()
+      );
+    });
+
+    test("send data at the right URL search event", () => {
+      tracker.trackSearch({
+        search: {
+          query: "query",
+        },
       });
 
-      test("applies data providers", () => {
-        tracker.trackEvent("pageview");
-        const [_, encodedPayload] = (navigator.sendBeacon as jest.Mock).mock
-          .lastCall;
+      expect(global.fetch).toHaveBeenCalledWith(
+        "http://localhost:3000/_application/analytics/collection/event/search",
+        expect.anything()
+      );
+    });
 
-        expect(JSON.parse(encodedPayload)).toMatchObject({
-          eventType: "pageview",
-          foo: "value",
-          url: "http://localhost/",
-        });
+    test("send data at the right URL - search click event", () => {
+      tracker.trackSearchClick({
+        search: {
+          query: "query",
+        },
+        page: {
+          url: "http://my-url-to-navigate/",
+        },
+        document: {
+          id: "123",
+          index: "1",
+        },
       });
 
-      test("merge user provided data with the data providers", () => {
-        tracker.trackEvent("pageview", { userData: "user data value" });
-        const [_, encodedPayload] = (navigator.sendBeacon as jest.Mock).mock
-          .lastCall;
+      expect(global.fetch).toHaveBeenCalledWith(
+        "http://localhost:3000/_application/analytics/collection/event/search_click",
+        expect.anything()
+      );
+    });
 
-        expect(JSON.parse(encodedPayload)).toMatchObject({
-          eventType: "pageview",
-          foo: "value",
-          event_data: {
-            userData: "user data value",
+    test("applies data providers", () => {
+      tracker.trackPageView({});
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          body: expect.stringContaining('"foo":"value"'),
+          headers: {
+            Authorization: "Apikey key",
+            "Content-Type": "application/json",
           },
-          url: "http://localhost/",
-        });
+        })
+      );
+    });
+
+    describe("error handling", () => {
+      test("when fetch is failed", async () => {
+        const mockError = new Error("some error");
+
+        global.fetch = jest.fn(() => Promise.reject(mockError));
+        jest.spyOn(global.console, "error").mockImplementation(() => {});
+
+        tracker.trackPageView({});
+
+        await flushPromises();
+
+        expect(global.console.error).toHaveBeenCalledWith(mockError);
       });
 
-      test("merge user provided data with session data", () => {
-        tracker.trackEvent("pageview");
-        const [_, encodedPayload] = (navigator.sendBeacon as jest.Mock).mock
-          .lastCall;
+      test("when request returns 4xx, 5xx status code", async () => {
+        const mockErrorReason = "some field is missing";
 
-        expect(JSON.parse(encodedPayload)).toMatchObject({
-          user_uuid: expect.any(String),
-          session_uuid: expect.any(String),
-        });
+        global.fetch = jest.fn(() =>
+          Promise.resolve({
+            ok: false,
+            json: () => Promise.resolve({ error: { caused_by: { reason: mockErrorReason } } }),
+          })
+        ) as jest.Mock<Promise<Response>>;
+        jest.spyOn(global.console, "error").mockImplementation(() => {});
+
+        tracker.trackPageView({});
+
+        await flushPromises();
+
+        expect(global.console.error).toHaveBeenCalledWith(new Error(mockErrorReason));
       });
+    });
+  });
+
+  describe("when session is not sampled", () => {
+    beforeEach(() => {
+      global.navigator.sendBeacon = jest.fn().mockImplementation();
+      // @ts-ignore
+      window.XMLHttpRequest = jest.fn().mockImplementation();
+
+      jest.spyOn(cookieUtils, "getCookie").mockReturnValue("false");
     });
 
     describe("using XMLHttpRequest", () => {
-      const openXHRMock = jest.fn().mockImplementation();
-      const setRequestHeaderMock = jest.fn().mockImplementation();
-      const sendXHRMock = jest.fn().mockImplementation();
-
-      beforeEach(() => {
-        Object.defineProperty(global.navigator, "sendBeacon", {
-          value: undefined,
-        });
-        // @ts-ignore
-        window.XMLHttpRequest = jest.fn().mockImplementation(() => {
-          return {
-            open: openXHRMock,
-            setRequestHeader: setRequestHeaderMock,
-            send: sendXHRMock,
-          };
-        });
-      });
-
-      test("send data at the right URL using a POST", () => {
-        tracker.trackEvent("pageview");
-        expect(openXHRMock).toHaveBeenCalledWith(
-          "POST",
-          "http://localhost/collection/events",
-          true
-        );
-      });
-
-      test("send data as text/plain", () => {
-        tracker.trackEvent("pageview");
-        expect(setRequestHeaderMock).toHaveBeenCalledWith(
-          "Content-Type",
-          "text/plain"
-        );
-      });
-
-      test("applies data providers", () => {
-        tracker.trackEvent("pageview");
-        const [encodedPayload] = sendXHRMock.mock.lastCall;
-
-        expect(JSON.parse(encodedPayload)).toMatchObject({
-          eventType: "pageview",
-          foo: "value",
-          url: "http://localhost/",
-        });
-      });
-
-      test("merge user provided data with the data providers", () => {
-        tracker.trackEvent("pageview", { userData: "user data value" });
-        const [encodedPayload] = sendXHRMock.mock.lastCall;
-
-        expect(JSON.parse(encodedPayload)).toMatchObject({
-          eventType: "pageview",
-          foo: "value",
-          event_data: {
-            userData: "user data value",
-          },
-          url: "http://localhost/",
-        });
-      });
-
-      test("merge user provided data with session data", () => {
-        tracker.trackEvent("pageview");
-        const [encodedPayload] = sendXHRMock.mock.lastCall;
-
-        expect(JSON.parse(encodedPayload)).toMatchObject({
-          user_uuid: expect.any(String),
-          session_uuid: expect.any(String),
-        });
+      test("does not send data", () => {
+        tracker.trackPageView({});
+        expect(XMLHttpRequest).not.toHaveBeenCalled();
       });
     });
   });

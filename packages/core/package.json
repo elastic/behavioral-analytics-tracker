@@ -1,14 +1,30 @@
 {
   "name": "@elastic/behavioral-analytics-tracker-core",
-  "version": "1.0.0",
-  "main": "src/index.ts",
-  "private": true,
+  "version": "2.0.6",
+  "main": "./dist/index.js",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./package": "./package.json",
+    "./package.json": "./package.json"
+  },
   "scripts": {
+    "build": "tsup",
     "test": "jest",
     "lint": "eslint **/*.ts*"
   },
   "devDependencies": {
     "eslint-config-custom": "*",
-    "tsconfig": "*"
+    "tsconfig": "*",
+    "tsup": "^6.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

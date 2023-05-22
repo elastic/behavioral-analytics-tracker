@@ -20,9 +20,13 @@ You can find more information about the Browser tracker in the [README](packages
 
 All packages are versioned and published using changesets. For convenience, the following commands are available on the root:
 
-- `yarn add-change`: Create a new changeset. Run every time you make a change to the packages. You will be prompted to select the packages that have changed and the type of change. A changeset file will be created in the `.changeset` folder. You can have multiple changesets in the same PR.
-- `yarn version-packages`: Bump the version of the packages based on the changesets. Run before publishing.
-- `yarn publish-packages`: Publish the packages to npm. Run after versioning.
+For every PR:
+
+- `yarn changeset`: Create a new changeset. Run every time you make a change to the packages. You will be prompted to select the packages that have changed and the type of change. A changeset file will be created in the `.changeset` folder. You can have multiple changesets in the same PR.
+
+For every release:
+
+- `yarn publish-packages`: Will run the build & test tasks. Then will adjust the package versions based on changesets and publish the packages to npm.
 
 ## Development
 

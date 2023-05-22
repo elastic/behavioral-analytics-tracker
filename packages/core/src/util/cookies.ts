@@ -14,6 +14,5 @@ export function setCookie(
   path: string = "/"
 ) {
   var expires = "expires=" + expiresAt.toUTCString();
-  document.cookie =
-    cookieName + "=" + cookieValue + "; " + expires + "; path=" + path;
+  document.cookie = cookieName + "=" + cookieValue + "; " + expires + "; path=" + path;
 }
