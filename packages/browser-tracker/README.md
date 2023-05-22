@@ -1,6 +1,6 @@
 # Browser Tracker
 
-This package provides a tracker for the browser. Instructions for integrating the browser tracker into your site can be found in the Behavioural Analytics Collection view, under the integrate tab.
+This package provides a tracker for the browser. Instructions for integrating the browser tracker into your site can be found in the Behavioural Analytics Collection view, under the **Integrate** tab.
 
 ## Usage
 
@@ -20,8 +20,8 @@ window.elasticAnalytics.createTracker({
 
 When `createTracker` is called, the tracker will store two fingerprints in the browser cookie:
 
-- User Token - a unique identifier for the user. Stored under `EA_UID` cookie. Default Time length is 24 hours from the first time the user visits the site.
-- Session Token - a unique identifier for the session. Stored under `EA_SID` cookie. Time length is 30 minutes from the last time the user visits the site.
+- **User Token** - a unique identifier for the user. Stored under `EA_UID` cookie. Default time length is 24 hours from the first time the user visits the site.
+- **Session Token** - a unique identifier for the session. Stored under `EA_SID` cookie. Time length is 30 minutes from the last time the user visits the site.
 
 These fingerprints are used to identify the user across sessions.
 
